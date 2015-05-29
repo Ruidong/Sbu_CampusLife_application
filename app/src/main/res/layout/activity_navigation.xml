@@ -1,0 +1,115 @@
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".NavigationActivity" >
+
+
+        <fragment
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/bSearch"
+            class="com.google.android.gms.maps.SupportMapFragment" />
+
+        <ImageButton
+            android:id="@+id/bNavigation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/navigate_button" />
+
+        <EditText
+            android:id="@+id/et_location"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/bSearch"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/bSearch"
+
+            android:ems="10"
+            android:hint="@string/hnt_et_location"
+            android:inputType="text"   />
+
+        <ImageButton
+            android:id="@+id/bSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/bNavigation"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/search_button" />
+
+
+        <LinearLayout
+            android:id="@+id/linear1"
+            android:layout_width="fill_parent"
+            android:layout_height="100dp"
+            android:layout_alignParentBottom="true"
+            >
+            <android.support.v4.view.ViewPager
+                android:id="@+id/bottomButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/showListButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true">
+        </FrameLayout>
+
+
+        <FrameLayout
+            android:id="@+id/summaryView"
+            android:layout_below="@+id/bSearch"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            >
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/Category_Container"
+            android:layout_below="@+id/bSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp">
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/Category_result_Container"
+            android:layout_below="@+id/bSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="150dp">
+        </FrameLayout>
+
+
+
+
+        <requestFocus />
+    </RelativeLayout>
+    <ListView
+        android:id="@+id/list_slidermenu"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@color/list_divider"
+        android:dividerHeight="1dp"
+        android:listSelector="@drawable/list_selector"
+        android:background="@color/list_background"/>
+</android.support.v4.widget.DrawerLayout>
