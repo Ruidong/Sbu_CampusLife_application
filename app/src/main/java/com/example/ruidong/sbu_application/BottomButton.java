@@ -31,6 +31,7 @@ public class BottomButton extends Fragment{
 
     }
 
+//  A way to send parameters to fragment
     static  BottomButton newInstance(String str1, String str2){
 
         BottomButton bottomButton = new BottomButton();
@@ -60,14 +61,13 @@ public class BottomButton extends Fragment{
 
 
 
-
+//      When a user click the bottombutton, create a relative SbuDailySumView Fragment and show it.
         bottombutton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 SbuDailySumView dailySumView = new SbuDailySumView();
                 dailySumView.setPOI(bottomButtonPOI);
-
                 dailySumView.setMsg(msg1,msg2);
                 FragmentTransaction dailySumViewStart = getFragmentManager().beginTransaction().add(R.id.summaryView,dailySumView);
                 dailySumViewStart.show(dailySumView);

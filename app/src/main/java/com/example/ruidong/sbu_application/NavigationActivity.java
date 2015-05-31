@@ -100,7 +100,6 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
     private LocationManager locationManager;
     LocationListener locationListener = new locationlistener();
     private EditText editText ;
-    private Button menuButton;
     private static String location ;
     private static double destinationLat = 40.915962;
     private static double destinationLng = -73.126264;
@@ -116,10 +115,6 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
 
 
     public static BottomButton bottomFrag;
-    private FragmentTransaction bottomTran;
-    public static View bottomView;
-
-    public static SbuDailySumView dailySumView;
 
 
     private DrawerLayout mDrawerLayout;
@@ -167,6 +162,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager(),null);
         layoutPager.setVisibility(View.INVISIBLE);
 
+                
 
         //map Initialize
         fragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
@@ -175,22 +171,22 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         map.setOnMarkerClickListener(this);
 
 
+
+
         showListFragment = new ShowListButton();
         FragmentTransaction showTran= getSupportFragmentManager().beginTransaction().add(R.id.showListButton, showListFragment);
         showTran.commit();
         FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(showListFragment);
         hideTran.commit();
 
-
+        // Create locationManager and get userlocatoin        
         locationManager=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria= new Criteria();
         String bestProvider = locationManager.getBestProvider(criteria, true);
-        Location Userlocation=locationManager.getLastKnownLocation(bestProvider);
-
-        if(Userlocation !=null ){
-            locationListener.onLocationChanged(Userlocation);
+        Location userlocation=locationManager.getLastKnownLocation(bestProvider);
+        if(userlocation !=null ){
+            locationListener.onLocationChanged(userlocation);
         }
-
         locationManager.requestLocationUpdates(bestProvider, 100, Criteria.ACCURACY_FINE,locationListener );
 
 
@@ -217,8 +213,6 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
 
                 FragmentTransaction Tran= getSupportFragmentManager().beginTransaction().remove(showListFragment);
                 Tran.commit();
-
-
                 genService.genFlag=false;
                 dailyService.dailyFlag=false;
                 location = editText.getText().toString();
@@ -227,11 +221,6 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
                 if( location != null ) {
 
                     new GetPOIItem(location).execute(new ApiConnector());
-
-
-
-
-
                 }
                 else
                     myMarkerCollection = null;
@@ -245,8 +234,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng arg0) {
-//					FragmentTransaction tran=getSupportFragmentManager().beginTransaction().hide(bottomFrag);
-//					tran.commit();
+
                 layoutPager.setVisibility(View.INVISIBLE);
 
 
@@ -280,18 +268,18 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         });
     }
 
+    // Based on the POI collection got from server, add corresponding marker on the map   
     public void addMarker(Collection<POI> myMarkerCollection){
-
-
+        
         map.clear();
-        for(POI markerElement: myMarkerCollection){
-
+        for(POI PoiElement: myMarkerCollection){
             MarkerOptions option= new MarkerOptions()
-                    .position((new LatLng(markerElement.getmLatitude(), markerElement.getmLongitude())))
-                    .title(markerElement.getPoiLabel());
+                    .position((new LatLng(PoiElement.getmLatitude(), PoiElement.getmLongitude())))
+                    .title(PoiElement.getPoiLabel());
             Marker currentMarker = map.addMarker(option);
-            mMarkersHashMap1.put(currentMarker, markerElement);
-            mMarkersHashMap2.put(markerElement, currentMarker);
+            //Put the Marker and corresponding poiElement in two hashmaps
+            mMarkersHashMap1.put(currentMarker, PoiElement); 
+            mMarkersHashMap2.put(PoiElement, currentMarker);
 
             LatLng  destination =new LatLng (destinationLat,destinationLng);
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 14));
@@ -299,8 +287,9 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         }
     }
 
+    // Based on POI collection, set each BottomButton Fragment, two parameters needed for a ButtomButton are Text Inforamtion, which are defined in each service.
+    // Then add these BottomButton into a list, initialize the ViewPager
     public  void setBottomButtonFragmentList(Collection<POI> myMarkerCollection){
-
         ArrayList<BottomButton> fragmentlists = new ArrayList<BottomButton>();
         for(POI poiElement : myMarkerCollection){
             BottomButton bottom = BottomButton.newInstance(dailyService.firstTextInfo(poiElement), dailyService.secondTextInfo(poiElement));
@@ -432,17 +421,13 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         }
     }
 
+    // A locationlistener to get the Userlocation based on GPS.
     class locationlistener implements LocationListener{
-
-
         @Override
         public  void onLocationChanged(Location location) {
             // TODO Auto-generated method stub
             if(location != null)
             {
-
-
-
                 double longitude = location.getLongitude();
                 double latitude = location.getLatitude();
                 usercurrentlocation = new LatLng(latitude, longitude);
@@ -466,10 +451,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
             // TODO Auto-generated method stub
 
         }
-
-
     }
-
     // Define onMarkerClick method,show customized information on bottomBar
     public  boolean onMarkerClick(final Marker marker) {
 
@@ -477,7 +459,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         destinationLat=currentPOI.getmLatitude();
         destinationLng=currentPOI.getmLongitude();
 
-        //map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(destinationLat, destinationLng), 14));
+
         marker.showInfoWindow();
 
         setBottomButtonFragment(currentPOI);
@@ -509,6 +491,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         return false ;
     }
 
+    //  When the list of BottomButton is set up, show these BottomButton.
     public void setBottomButtonFragment(POI currentPOI){
         Integer position = bottomHash1.get(currentPOI);
         pager.setCurrentItem(position);
@@ -634,9 +617,9 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         }
 
     }
+
+
     public void ObtainData(JSONArray jsonArray,String keyword){
-
-
 
         for(int i=0; i<jsonArray.length(); i++){
 
@@ -675,8 +658,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
 
         @Override
         protected void onPostExecute(JSONArray jsonArray){
-
-
+        //  After getting the Json data from server, show them in map
             ObtainData(jsonArray,keyword);
 
             dailyService.dailyFlag=true;
@@ -685,6 +667,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
 
             setBottomButtonFragmentList(myMarkerCollection);
 
+            //If there are more than one POI related to user keyword, create a list to show these poi.
             if(myMarkerCollection.size()>1){
 
                 resultFragment=new SbuCategoryResultFragment();
