@@ -65,7 +65,7 @@ public class POI
     }
 
 
-    public String getmPhone(){
+    public String getPoiPhone(){
         return this.poiPhone;
     }
     public void setmPhone(String Phone){
