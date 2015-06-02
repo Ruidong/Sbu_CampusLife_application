@@ -9,8 +9,6 @@ public class POI
 {
     private String poiLabel;
     private String poiLocatoin;
-    private String poiFundDetail;
-    private String poiPhone;
     private Double poiLatitude;
     private Double poiLongitude;
     private int poiId;
@@ -21,12 +19,11 @@ public class POI
 
     }
 
-    public POI(int id, String label,String location, double latitude, double longitude,String fund_detail,String phone)
+    public POI(int id, String label,String location, double latitude, double longitude)
     {
         this.poiLabel = label;
         this.poiLocatoin=location;
-        this.poiFundDetail=fund_detail;
-        this.poiPhone=phone;
+
         this.poiLatitude = latitude;
         this.poiLongitude = longitude;
         this.poiId=id;
@@ -56,21 +53,6 @@ public class POI
         this.poiLocatoin=location;
     }
 
-
-    public String getPoiFundDetail(){
-        return poiFundDetail;
-    }
-    public void setmFund_(String poiFundDetail){
-        this.poiFundDetail=poiFundDetail;
-    }
-
-
-    public String getPoiPhone(){
-        return this.poiPhone;
-    }
-    public void setmPhone(String Phone){
-        this.poiPhone=Phone;
-    }
 
 
     public Double getmLatitude()

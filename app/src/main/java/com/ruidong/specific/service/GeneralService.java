@@ -23,12 +23,13 @@ public class GeneralService implements OncampusAppService {
 
     @Override
     public String firstTextInfo(POI POI_element){
-        String str="Location:"+POI_element.getPoiLocation();
+        String str="Name:"+POI_element.getPoiLabel();
         return str;
     }
     @Override
     public String secondTextInfo(POI POI_element){
-        String str="Contact Phone:"+POI_element.getPoiPhone();
+
+        String str="Location:"+POI_element.getPoiLocation();
         return str;
     }
     @Override

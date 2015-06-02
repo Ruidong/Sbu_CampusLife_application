@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import com.example.ruidong.sbu_application.OncampusAppService;
 import com.example.ruidong.sbu_application.POI;
+import com.example.ruidong.sbu_application.SbuDailyLifePOI;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -30,21 +31,25 @@ public class SbuDailyLifeService implements OncampusAppService {
 
     }
 
+
     @Override
     public Collection<POI> getTargetPOI(String str){
-        Collection<POI> myPOICollection = dailyMap.get(str);
+
+        Collection<POI> myPOICollection =dailyMap.get(str);
         return myPOICollection;
     }
 
     @Override
     public String firstTextInfo(POI POI_element){
-        String str="Location:"+POI_element.getPoiLocation();
+        SbuDailyLifePOI SDLPoi = (SbuDailyLifePOI)POI_element;
+        String str="Location:"+SDLPoi.getPoiLocation();
         return str;
     }
 
     @Override
     public String secondTextInfo(POI POI_element){
-        String str="Available_Time:"+POI_element.getPoiFundDetail();
+        SbuDailyLifePOI SDLPoi = (SbuDailyLifePOI)POI_element;
+        String str="Available_Time:"+SDLPoi.getPoiTime();
         return str;
     }
 
@@ -57,52 +62,9 @@ public class SbuDailyLifeService implements OncampusAppService {
     public void storeData(JSONObject json, String keyword) throws JSONException{
 
 
-        dailyMap.put(keyword.toLowerCase(), new POI(json.getInt("POI_ID"), json.getString("POI_Name"),
+        dailyMap.put(keyword.toLowerCase(), new SbuDailyLifePOI(json.getInt("POI_ID"), json.getString("POI_Name"),
                 json.getString("Location_name"), json.getDouble("Latitude"), json.getDouble("Longtitude"), json.getString("Available_time"),
                 json.getString("Phone")));
-
-
-
-    }
-
-
-    public ArrayList<String> getTargetListView(POI POI_element){
-
-        String[] values = new String[] {"Name:  "+POI_element.getPoiLabel(),"Location:  "+POI_element.getPoiLocation(),
-                "Available Time:  "+POI_element.getPoiFundDetail(),"Contact Phone:  "+POI_element.getPoiPhone()};
-
-        final ArrayList<String> list = new ArrayList<String>();
-        for (int i = 0; i < values.length; ++i) {
-            list.add(values[i]);
-        }
-
-        return list;
-    }
-
-
-    class StableArrayAdapter extends ArrayAdapter<String> {
-
-        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
-
-        public StableArrayAdapter(Context context, int textViewResourceId,
-                                  List<String> objects) {
-            super(context, textViewResourceId, objects);
-            for (int i = 0; i < objects.size(); ++i) {
-                mIdMap.put(objects.get(i), i);
-            }
-        }
-
-        @Override
-        public long getItemId(int position) {
-            String item = getItem(position);
-            return mIdMap.get(item);
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-
     }
 
 }
