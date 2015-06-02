@@ -28,7 +28,7 @@ public class GeneralService implements OncampusAppService {
     }
     @Override
     public String secondTextInfo(POI POI_element){
-        String str="Contact Phone:"+POI_element.getmPhone();
+        String str="Contact Phone:"+POI_element.getPoiPhone();
         return str;
     }
     @Override

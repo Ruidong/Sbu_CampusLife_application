@@ -18,12 +18,7 @@ import com.google.common.collect.Multimap;
 
 
 import android.content.Context;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
 
 
 public class SbuDailyLifeService implements OncampusAppService {
@@ -74,7 +69,7 @@ public class SbuDailyLifeService implements OncampusAppService {
     public ArrayList<String> getTargetListView(POI POI_element){
 
         String[] values = new String[] {"Name:  "+POI_element.getPoiLabel(),"Location:  "+POI_element.getPoiLocation(),
-                "Available Time:  "+POI_element.getPoiFundDetail(),"Contact Phone:  "+POI_element.getmPhone()};
+                "Available Time:  "+POI_element.getPoiFundDetail(),"Contact Phone:  "+POI_element.getPoiPhone()};
 
         final ArrayList<String> list = new ArrayList<String>();
         for (int i = 0; i < values.length; ++i) {

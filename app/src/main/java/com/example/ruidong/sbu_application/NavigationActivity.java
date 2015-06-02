@@ -664,7 +664,6 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
             dailyService.dailyFlag=true;
 
             myMarkerCollection=dailyService.getTargetPOI(keyword);
-
             setBottomButtonFragmentList(myMarkerCollection);
 
             //If there are more than one POI related to user keyword, create a list to show these poi.
