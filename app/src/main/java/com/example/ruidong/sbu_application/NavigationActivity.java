@@ -4,20 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +21,6 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTabHost;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -110,6 +95,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
     public  static Collection<POI> myMarkerCollection;
     private static HashMap<Marker, POI> mMarkersHashMap1 = new HashMap<Marker, POI>();
     public  static HashMap<POI, Marker> mMarkersHashMap2 = new HashMap<POI, Marker>();
+    public static boolean showResultListFlag = false;
 
     private boolean listViewFlag=false;
 
@@ -464,7 +450,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
 
         setBottomButtonFragment(currentPOI);
 
-        if(myMarkerCollection.size()>1)
+        if(showResultListFlag == true)
         {
             FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(resultFragment);
             hideTran.commit();
@@ -662,15 +648,18 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
             ObtainData(jsonArray,keyword);
 
             dailyService.dailyFlag=true;
+            showResultListFlag=false;
 
             myMarkerCollection=dailyService.getTargetPOI(keyword);
             setBottomButtonFragmentList(myMarkerCollection);
 
             //If there are more than one POI related to user keyword, create a list to show these poi.
             if(myMarkerCollection.size()>1){
+                showResultListFlag=true;
 
                 resultFragment=new SbuCategoryResultFragment();
                 ((SbuCategoryResultFragment) resultFragment).setTargetList(myMarkerCollection);
+                System.out.print("myMarkerCollection Size = " + myMarkerCollection.size());
 
                 FragmentTransaction resultTran=getSupportFragmentManager().beginTransaction()
                         .add(R.id.Category_result_Container,resultFragment);
@@ -684,6 +673,9 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
 
             }
             addMarker(myMarkerCollection);
+
+            myMarkerCollection.clear();
+
 
         }
 

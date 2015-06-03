@@ -5,6 +5,8 @@ package com.example.ruidong.sbu_application;
  */
 import android.R.integer;
 
+import java.util.Comparator;
+
 public class POI
 {
     private String poiLabel;
@@ -73,4 +75,6 @@ public class POI
     {
         this.poiLongitude = Longitude;
     }
+
+
 }

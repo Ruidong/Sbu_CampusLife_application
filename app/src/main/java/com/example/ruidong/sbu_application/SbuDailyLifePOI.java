@@ -3,7 +3,7 @@ package com.example.ruidong.sbu_application;
 /**
  * Created by Ruidong on 5/30/2015.
  */
-public class SbuDailyLifePOI extends POI {
+public class SbuDailyLifePOI extends POI  {
 
     private String poiLabel;
     private String poiLocation;
@@ -83,4 +83,6 @@ public class SbuDailyLifePOI extends POI {
     {
         this.poiLongitude = Longitude;
     }
+
+
 }
