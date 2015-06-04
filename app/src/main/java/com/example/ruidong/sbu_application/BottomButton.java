@@ -71,6 +71,7 @@ public class BottomButton extends Fragment{
                 dailySumView.setMsg(msg1,msg2);
                 FragmentTransaction dailySumViewStart = getFragmentManager().beginTransaction().add(R.id.summaryView,dailySumView);
                 dailySumViewStart.show(dailySumView);
+                dailySumViewStart.addToBackStack(null);
                 dailySumViewStart.commit();
                 dailySumViewBot=dailySumView;
                 DailySumFlag=true;

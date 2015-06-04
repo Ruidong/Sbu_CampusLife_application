@@ -84,7 +84,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
     private LatLng usercurrentlocation;
     private LocationManager locationManager;
     LocationListener locationListener = new locationlistener();
-    private EditText editText ;
+    public static EditText editText ;
     private static String location ;
     private static double destinationLat = 40.915962;
     private static double destinationLng = -73.126264;
@@ -155,9 +155,6 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         map = fragment.getMap();
         map.setMyLocationEnabled(true);
         map.setOnMarkerClickListener(this);
-
-
-
 
         showListFragment = new ShowListButton();
         FragmentTransaction showTran= getSupportFragmentManager().beginTransaction().add(R.id.showListButton, showListFragment);
@@ -231,6 +228,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
                     FragmentTransaction showTran= getSupportFragmentManager().beginTransaction().show(showListFragment);
                     showTran.commit();
                 }
+
             }
         });
 
@@ -253,6 +251,8 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
             }
         });
     }
+
+
 
     // Based on the POI collection got from server, add corresponding marker on the map   
     public void addMarker(Collection<POI> myMarkerCollection){
@@ -377,8 +377,16 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
             case 1:
                 SbuDailyLifeCategoryFragment fragment=new SbuDailyLifeCategoryFragment();
                 MenuFragment = fragment;
-
                 fragment.categories.clear();
+
+                if(resultFragment!=null) {
+                    FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(resultFragment);
+                    removeTran1.commit();
+                    FragmentTransaction removeTran2 = getSupportFragmentManager().beginTransaction().remove(showListFragment);
+                    removeTran2.commit();
+                    editText.setText(" ");
+                }
+
 
                 break;
             case 2:
@@ -393,9 +401,9 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         }
 
         if (MenuFragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.Category_Container, MenuFragment).commit();
+            FragmentTransaction tran = getSupportFragmentManager().beginTransaction().replace(R.id.Category_Container,MenuFragment);
+            tran.addToBackStack(null);
+            tran.commit();
             // update selected item and title, then close the drawer
             mDrawerList.setItemChecked(position, true);
             mDrawerList.setSelection(position);
@@ -495,6 +503,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
 
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
@@ -659,7 +668,6 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
 
                 resultFragment=new SbuCategoryResultFragment();
                 ((SbuCategoryResultFragment) resultFragment).setTargetList(myMarkerCollection);
-                System.out.print("myMarkerCollection Size = " + myMarkerCollection.size());
 
                 FragmentTransaction resultTran=getSupportFragmentManager().beginTransaction()
                         .add(R.id.Category_result_Container,resultFragment);
