@@ -1,5 +1,7 @@
 package com.example.ruidong.sbu_application;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by Ruidong on 5/30/2015.
  */
@@ -12,22 +14,17 @@ public class SbuDailyLifePOI extends POI  {
     private Double poiLatitude;
     private Double poiLongitude;
     private int poiId;
+    private final LatLng mPosition;
 
 
-
-
-    public SbuDailyLifePOI(){
-
-    }
-
-    public SbuDailyLifePOI(int id, String label,String location, double latitude, double longitude,String time,String phone)
+    public SbuDailyLifePOI(int id, String label,String location,String time,String phone,LatLng postion)
     {
+        super(id, label, location, postion);
         this.poiLabel = label;
         this.poiLocation=location;
         this.poiTime=time;
         this.poiPhone=phone;
-        this.poiLatitude = latitude;
-        this.poiLongitude = longitude;
+        mPosition = postion;
         this.poiId=id;
     }
 

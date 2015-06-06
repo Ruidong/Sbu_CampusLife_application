@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.database.DefaultDatabaseErrorHandler;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
@@ -30,14 +31,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
+
 import android.widget.AdapterView;
-import android.widget.Button;
+
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,12 +52,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.ruidong.common.tool.ApiConnector;
 import com.ruidong.common.tool.GMapV2Direction;
 import com.ruidong.common.tool.GetDirectionsAsyncTask;
 import com.ruidong.dailylife.fragment.SbuCategoryResultFragment;
 import com.ruidong.dailylife.fragment.SbuDailyLifeCategoryFragment;
-import com.ruidong.dailylife.fragment.SbuDailySumView;
 import com.ruidong.slidebutton.ViewPagerAdapter;
 import com.ruidong.slidebutton.ViewPagerChangeListener;
 import com.ruidong.slidingmenu.adapter.NavDrawerItem;
@@ -67,7 +71,7 @@ import com.ruidong.specific.service.SbuDailyLifeService;
 
 
 
-public class NavigationActivity extends FragmentActivity implements OnMarkerClickListener{
+public class NavigationActivity extends FragmentActivity implements  ClusterManager.OnClusterInfoWindowClickListener<POI>, ClusterManager.OnClusterItemInfoWindowClickListener<POI> {
 
 
 
@@ -95,6 +99,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
     public  static Collection<POI> myMarkerCollection;
     private static HashMap<Marker, POI> mMarkersHashMap1 = new HashMap<Marker, POI>();
     public  static HashMap<POI, Marker> mMarkersHashMap2 = new HashMap<POI, Marker>();
+    public HashMap<String,POI> markerPOIMap = new HashMap<String, POI>();
     public static boolean showResultListFlag = false;
 
     private boolean listViewFlag=false;
@@ -132,6 +137,15 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
     public static HashMap<POI, Integer> bottomHash1 = new HashMap<POI, Integer>();
     public static HashMap<Integer, POI> bottomHash2 = new HashMap<Integer, POI>();
 
+    private ClusterManager<POI> mClusterManager;
+    private Marker InfoShowedMarker;
+    private Cluster<POI> clickedCluster;
+    private POI clickedClusterItem;
+
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -154,7 +168,6 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         fragment = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map));
         map = fragment.getMap();
         map.setMyLocationEnabled(true);
-        map.setOnMarkerClickListener(this);
 
         showListFragment = new ShowListButton();
         FragmentTransaction showTran= getSupportFragmentManager().beginTransaction().add(R.id.showListButton, showListFragment);
@@ -232,6 +245,32 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
             }
         });
 
+       map.setOnMarkerClickListener(new OnMarkerClickListener() {
+           @Override
+           public boolean onMarkerClick(Marker marker) {
+
+
+               POI currentPOI= mMarkersHashMap1.get(marker);
+               destinationLat=currentPOI.getPosition().latitude;
+               destinationLng=currentPOI.getPosition().longitude;
+
+
+               marker.showInfoWindow();
+
+               setBottomButtonFragment(currentPOI);
+
+               if(showResultListFlag == true)
+               {
+                   FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(resultFragment);
+                   hideTran.commit();
+                   FragmentTransaction tran = getSupportFragmentManager().beginTransaction().hide(showListFragment);
+                   tran.commit();
+               }
+
+               return false;
+           }
+       });
+
         // Show the navigation route.
         navigationImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -260,7 +299,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
         map.clear();
         for(POI PoiElement: myMarkerCollection){
             MarkerOptions option= new MarkerOptions()
-                    .position((new LatLng(PoiElement.getmLatitude(), PoiElement.getmLongitude())))
+                    .position((PoiElement.getPosition()))
                     .title(PoiElement.getPoiLabel());
             Marker currentMarker = map.addMarker(option);
             //Put the Marker and corresponding poiElement in two hashmaps
@@ -357,6 +396,197 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
 
     }
 
+
+
+    @Override
+    public void onClusterInfoWindowClick(Cluster<POI> cluster) {
+
+    }
+
+    public boolean onClusterItemClick(POI poi) {
+        Marker marker=NavigationActivity.mMarkersHashMap2.get(poi);
+
+        if(marker !=null)
+        {
+            marker.showInfoWindow();
+            setInfoShowedMarker(marker);
+        }
+
+        destinationLat=poi.getPosition().latitude;
+        destinationLng=poi.getPosition().longitude;
+        marker.showInfoWindow();
+
+        setBottomButtonFragment(poi);
+
+        if(showResultListFlag == true)
+        {
+            FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(resultFragment);
+            hideTran.commit();
+            FragmentTransaction tran = getSupportFragmentManager().beginTransaction().hide(showListFragment);
+            tran.commit();
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(POI poi) {
+
+    }
+
+    private class POIRenderer extends DefaultClusterRenderer<POI>{
+
+        public POIRenderer(){
+            super(getApplicationContext(), map, mClusterManager);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(POI item, MarkerOptions markerOptions) {
+            markerOptions.title(item.getPoiLabel());
+        }
+
+        @Override
+        protected boolean shouldRenderAsCluster(Cluster<POI> cluster) {
+            return cluster.getSize() > 1;
+        }
+
+        @Override
+        protected void onClusterItemRendered(POI clusterItem, Marker marker) {
+            super.onClusterItemRendered(clusterItem, marker);
+            mMarkersHashMap2.put(clusterItem, marker);
+        }
+    }
+
+    private void setUpCluster(Collection<POI> myMarkerCollection){
+          mClusterManager = new ClusterManager<POI>(this,map);
+          map.setInfoWindowAdapter(mClusterManager.getMarkerManager());
+
+          mClusterManager.getClusterMarkerCollection().setOnInfoWindowAdapter(new CustomAdapterForCluster());
+          mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new CustomAdapterForCluster());
+
+          mClusterManager.setRenderer(new POIRenderer());
+          map.setOnCameraChangeListener(mClusterManager);
+          map.setOnMarkerClickListener(mClusterManager);
+          map.setOnInfoWindowClickListener(mClusterManager);
+
+          mClusterManager.setOnClusterClickListener(new ClusterManager.OnClusterClickListener<POI>() {
+              @Override
+              public boolean onClusterClick(Cluster<POI> cluster) {
+
+                  clickedCluster = cluster;
+
+
+                  return false;
+              }
+          });
+            mClusterManager.setOnClusterInfoWindowClickListener(this);
+            mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<POI>() {
+                @Override
+                public boolean onClusterItemClick(POI poi) {
+                    clickedClusterItem = poi;
+                    Marker marker=NavigationActivity.mMarkersHashMap2.get(poi);
+
+                    if(marker !=null)
+                    {
+                        marker.showInfoWindow();
+                        setInfoShowedMarker(marker);
+                    }
+
+                    destinationLat=poi.getPosition().latitude;
+                    destinationLng=poi.getPosition().longitude;
+                    marker.showInfoWindow();
+
+                    setBottomButtonFragment(poi);
+
+                    if(showResultListFlag == true)
+                    {
+                        FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(resultFragment);
+                        hideTran.commit();
+                        FragmentTransaction tran = getSupportFragmentManager().beginTransaction().hide(showListFragment);
+                        tran.commit();
+                    }
+                    return false;
+                }
+            });
+
+          mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+          addItems( myMarkerCollection);
+          mClusterManager.cluster();
+    }
+
+     private void addItems(Collection<POI> myMarkerCollection){
+        for(POI poiElement : myMarkerCollection){
+             if(poiElement != null) {
+                 mClusterManager.addItem(poiElement);
+             }
+        }
+     }
+
+    private class CustomAdapterForCluster implements GoogleMap.InfoWindowAdapter {
+
+        private final View myContentsView;
+
+        public CustomAdapterForCluster(){
+            myContentsView = getLayoutInflater().inflate(R.layout.custom_cluster_infowindow,null);
+        }
+
+        @Override
+        public View getInfoWindow(Marker marker) {
+
+
+            return null;
+        }
+
+        @Override
+        public View getInfoContents(Marker marker) {
+            if(clickedCluster != null){
+                ArrayList<POI> clusterList = new ArrayList<POI>();
+                String position = clickedCluster.getItems().iterator().next().getPoiLocation();
+                TextView clusterPosition = (TextView)myContentsView.findViewById(R.id.clusterTitle);
+                clusterPosition.setText("ClusterPosition:"+position);
+
+                for(POI item : clickedCluster.getItems()){
+                    clusterList.add(item);
+                }
+
+                GridView grid = (GridView)myContentsView.findViewById(R.id.clusterGrid);
+                ClusterGridAdapter adapter = new ClusterGridAdapter(getApplicationContext(),clusterList);
+                grid.setAdapter(adapter);
+
+            }
+
+            if(clickedClusterItem!= null){
+                ArrayList<POI> clusterList = new ArrayList<POI>();
+                String position = clickedClusterItem.getPoiLocation();
+                TextView clusterPosition = (TextView)myContentsView.findViewById(R.id.clusterTitle);
+                clusterPosition.setText("ClusterPosition:"+position);
+                clusterList.add(clickedClusterItem);
+                GridView grid = (GridView)myContentsView.findViewById(R.id.clusterGrid);
+                ClusterGridAdapter adapter = new ClusterGridAdapter(getApplicationContext(),clusterList);
+                grid.setAdapter(adapter);
+            }
+            clickedCluster = null;
+            clickedClusterItem = null;
+            return myContentsView;
+        }
+
+    }
+
+    public Marker getInfoShowedMarker(){
+        return InfoShowedMarker;
+    }
+
+
+    public void setInfoShowedMarker(Marker marker){
+        InfoShowedMarker = marker;
+    }
+
+    public void hideMarkerInfo(){
+
+        InfoShowedMarker.hideInfoWindow();
+    }
+
+
     private class SlideMenuClickListener implements ListView.OnItemClickListener {
 
         @Override
@@ -446,44 +676,7 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
 
         }
     }
-    // Define onMarkerClick method,show customized information on bottomBar
-    public  boolean onMarkerClick(final Marker marker) {
 
-        POI currentPOI= mMarkersHashMap1.get(marker);
-        destinationLat=currentPOI.getmLatitude();
-        destinationLng=currentPOI.getmLongitude();
-
-
-        marker.showInfoWindow();
-
-        setBottomButtonFragment(currentPOI);
-
-        if(showResultListFlag == true)
-        {
-            FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(resultFragment);
-            hideTran.commit();
-            FragmentTransaction tran = getSupportFragmentManager().beginTransaction().hide(showListFragment);
-            tran.commit();
-        }
-
-
-//        if(genService.genFlag==true)
-//        {
-//
-//        	bottomFrag.setbottomText1(genService.firstTextInfo(currentPOI));
-//        	bottomFrag.setbottomText2(genService.secondTextInfo(currentPOI));
-//
-//        }
-//
-//        if(dailyService.dailyFlag==true)
-//        {
-//        	bottomFrag.setbottomText1(dailyService.firstTextInfo(currentPOI));
-//        	bottomFrag.setbottomText2(dailyService.secondTextInfo(currentPOI));
-//
-//        }
-
-        return false ;
-    }
 
     //  When the list of BottomButton is set up, show these BottomButton.
     public void setBottomButtonFragment(POI currentPOI){
@@ -680,7 +873,8 @@ public class NavigationActivity extends FragmentActivity implements OnMarkerClic
                 hideTran.commit();
 
             }
-            addMarker(myMarkerCollection);
+     //            addMarker(myMarkerCollection);
+            setUpCluster(myMarkerCollection);
 
             myMarkerCollection.clear();
 

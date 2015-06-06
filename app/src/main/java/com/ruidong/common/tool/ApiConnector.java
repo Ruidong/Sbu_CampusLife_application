@@ -24,7 +24,7 @@ public class ApiConnector {
 
     public JSONArray GetPOI(String keyword){
 
-        String url = "http://2-dot-plasma-moment-89614.appspot.com/version3servlet";
+        String url = "http://1-dot-river-formula-96210.appspot.com/version3servlet";
 
         //Get HttpResponse Object from url,
         //Get HttpEntity from Http Response Object

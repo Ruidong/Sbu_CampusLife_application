@@ -5,30 +5,24 @@ package com.example.ruidong.sbu_application;
  */
 import android.R.integer;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
+
 import java.util.Comparator;
 
-public class POI
-{
+public class POI implements ClusterItem {
     private String poiLabel;
     private String poiLocatoin;
-    private Double poiLatitude;
-    private Double poiLongitude;
     private int poiId;
+    private final LatLng mPosition;
 
 
-    public POI()
-    {
-
-    }
-
-    public POI(int id, String label,String location, double latitude, double longitude)
+    public POI(int id, String label,String location, LatLng position)
     {
         this.poiLabel = label;
         this.poiLocatoin=location;
-
-        this.poiLatitude = latitude;
-        this.poiLongitude = longitude;
         this.poiId=id;
+        mPosition = position;
     }
 
 
@@ -47,7 +41,6 @@ public class POI
         this.poiLabel = Label;
     }
 
-
     public String getPoiLocation(){
         return poiLocatoin;
     }
@@ -55,26 +48,8 @@ public class POI
         this.poiLocatoin=location;
     }
 
-
-
-    public Double getmLatitude()
-    {
-        return poiLatitude;
+    @Override
+    public LatLng getPosition() {
+        return mPosition;
     }
-    public void setmLatitude(Double Latitude)
-    {
-        this.poiLatitude = Latitude;
-    }
-
-
-    public Double getmLongitude()
-    {
-        return poiLongitude;
-    }
-    public void setmLongitude(Double Longitude)
-    {
-        this.poiLongitude = Longitude;
-    }
-
-
 }

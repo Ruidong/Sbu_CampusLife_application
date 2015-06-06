@@ -13,7 +13,7 @@ import com.google.android.gms.maps.model.Marker;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 
 public class ViewPagerChangeListener implements OnPageChangeListener {
-
+    private NavigationActivity activity = new NavigationActivity();
 
 
 
@@ -22,11 +22,23 @@ public class ViewPagerChangeListener implements OnPageChangeListener {
 
         POI currentPoi= NavigationActivity.bottomHash2.get(position);
 
-        LatLng  latlng =new LatLng (currentPoi.getmLatitude(),currentPoi.getmLongitude());
+        LatLng  latlng =currentPoi.getPosition();
         NavigationActivity.map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 14));
         Marker marker=NavigationActivity.mMarkersHashMap2.get(currentPoi);
 
-        marker.showInfoWindow();
+        if(marker !=null)
+        {
+            marker.showInfoWindow();
+            activity.setInfoShowedMarker(marker);
+        }
+
+        if(marker == null){
+            if(activity.getInfoShowedMarker() != null){
+            activity.hideMarkerInfo();
+            }
+
+
+        }
 
     }
 

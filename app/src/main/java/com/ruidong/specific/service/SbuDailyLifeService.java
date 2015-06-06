@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import com.example.ruidong.sbu_application.OncampusAppService;
 import com.example.ruidong.sbu_application.POI;
 import com.example.ruidong.sbu_application.SbuDailyLifePOI;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -63,8 +64,8 @@ public class SbuDailyLifeService implements OncampusAppService {
 
 
         dailyMap.put(keyword.toLowerCase(), new SbuDailyLifePOI(json.getInt("POI_ID"), json.getString("POI_Name"),
-                json.getString("Location_name"), json.getDouble("Latitude"), json.getDouble("Longtitude"), json.getString("Available_time"),
-                json.getString("Phone")));
+                json.getString("Location_name"),json.getString("Available_time"),
+                json.getString("Phone"),new LatLng(json.getDouble("Latitude"),json.getDouble("Longtitude"))));
     }
 
 }
