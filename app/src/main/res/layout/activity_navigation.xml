@@ -95,6 +95,13 @@
             android:layout_marginTop="150dp">
         </FrameLayout>
 
+        <FrameLayout
+            android:id="@+id/Cluster_result_Container"
+            android:layout_below="@+id/bSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="180dp">
+        </FrameLayout>
 
 
 

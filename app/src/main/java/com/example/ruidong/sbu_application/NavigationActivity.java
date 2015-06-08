@@ -8,9 +8,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
-import android.database.DefaultDatabaseErrorHandler;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -34,8 +33,8 @@ import android.view.View;
 
 import android.widget.AdapterView;
 
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -52,12 +51,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.MarkerManager;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.ruidong.common.tool.ApiConnector;
 import com.ruidong.common.tool.GMapV2Direction;
 import com.ruidong.common.tool.GetDirectionsAsyncTask;
+import com.ruidong.dailylife.fragment.SbuCategoryResultAdapter;
 import com.ruidong.dailylife.fragment.SbuCategoryResultFragment;
 import com.ruidong.dailylife.fragment.SbuDailyLifeCategoryFragment;
 import com.ruidong.slidebutton.ViewPagerAdapter;
@@ -141,8 +142,13 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
     private Marker InfoShowedMarker;
     private Cluster<POI> clickedCluster;
     private POI clickedClusterItem;
-
-
+    private POIRenderer poiRenderer;
+    private Marker targetClusterMarker;
+    public  Collection<Marker> markerCollection;
+    private boolean clusterFlag = false;
+    private boolean clusterItemFlag = false;
+    private SbuCategoryResultFragment clusterResultFragment;
+    private boolean clusterResultFragmentFlag ;
 
 
 
@@ -158,7 +164,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
         layoutPager=(LinearLayout)findViewById(R.id.linear1);
         pager = (ViewPager)findViewById(R.id.bottomButton);
-        pager.setOnPageChangeListener(new ViewPagerChangeListener());
+        pager.setOnPageChangeListener(new ViewPagerChangeListener(this));
         mAdapter = new ViewPagerAdapter(getSupportFragmentManager(),null);
         layoutPager.setVisibility(View.INVISIBLE);
 
@@ -203,26 +209,8 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 //
 //		    });
 
-        searchImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        searchImageButton.setOnClickListener(new searchOnclickListener() {
 
-                FragmentTransaction Tran= getSupportFragmentManager().beginTransaction().remove(showListFragment);
-                Tran.commit();
-                genService.genFlag=false;
-                dailyService.dailyFlag=false;
-                location = editText.getText().toString();
-
-                // Determine which service's poi is relative with user input.
-                if( location != null ) {
-
-                    new GetPOIItem(location).execute(new ApiConnector());
-                }
-                else
-                    myMarkerCollection = null;
-
-
-            }
         });
 
 
@@ -245,7 +233,9 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
             }
         });
 
-       map.setOnMarkerClickListener(new OnMarkerClickListener() {
+        map.setInfoWindowAdapter(new CustomAdapterForCluster());
+
+        map.setOnMarkerClickListener(new OnMarkerClickListener() {
            @Override
            public boolean onMarkerClick(Marker marker) {
 
@@ -289,6 +279,26 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
             }
         });
+    }
+
+    private class searchOnclickListener implements View.OnClickListener{
+
+        @Override
+        public void onClick(View v) {
+            FragmentTransaction Tran= getSupportFragmentManager().beginTransaction().remove(showListFragment);
+            Tran.commit();
+            genService.genFlag=false;
+            dailyService.dailyFlag=false;
+            location = editText.getText().toString();
+
+            // Determine which service's poi is relative with user input.
+            if( location != null ) {
+
+                new GetPOIItem(location).execute(new ApiConnector());
+            }
+            else
+                myMarkerCollection = null;
+        }
     }
 
 
@@ -400,33 +410,23 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
     @Override
     public void onClusterInfoWindowClick(Cluster<POI> cluster) {
+             if(clusterResultFragmentFlag == false) {
+                 if (cluster.getSize() > 1) {
+                     clusterResultFragment = new SbuCategoryResultFragment();
+                     ArrayList<SbuDailyLifePOI> list = new ArrayList<SbuDailyLifePOI>();
+                     for (POI poi : cluster.getItems()) {
+                         SbuDailyLifePOI SDLPoi = (SbuDailyLifePOI) poi;
+                         list.add(SDLPoi);
+                     }
+                     clusterResultFragment.setPoiList(list);
+                     FragmentTransaction resultTran = getSupportFragmentManager().beginTransaction()
+                             .add(R.id.Cluster_result_Container, clusterResultFragment);
+                     clusterResultFragmentFlag = true;
+                     resultTran.addToBackStack(null);
+                     resultTran.commit();
 
-    }
-
-    public boolean onClusterItemClick(POI poi) {
-        Marker marker=NavigationActivity.mMarkersHashMap2.get(poi);
-
-        if(marker !=null)
-        {
-            marker.showInfoWindow();
-            setInfoShowedMarker(marker);
-        }
-
-        destinationLat=poi.getPosition().latitude;
-        destinationLng=poi.getPosition().longitude;
-        marker.showInfoWindow();
-
-        setBottomButtonFragment(poi);
-
-        if(showResultListFlag == true)
-        {
-            FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(resultFragment);
-            hideTran.commit();
-            FragmentTransaction tran = getSupportFragmentManager().beginTransaction().hide(showListFragment);
-            tran.commit();
-        }
-
-        return false;
+                 }
+             }
     }
 
     @Override
@@ -434,7 +434,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
     }
 
-    private class POIRenderer extends DefaultClusterRenderer<POI>{
+    public class POIRenderer extends DefaultClusterRenderer<POI>{
 
         public POIRenderer(){
             super(getApplicationContext(), map, mClusterManager);
@@ -464,7 +464,9 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
           mClusterManager.getClusterMarkerCollection().setOnInfoWindowAdapter(new CustomAdapterForCluster());
           mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(new CustomAdapterForCluster());
 
-          mClusterManager.setRenderer(new POIRenderer());
+          poiRenderer =  new POIRenderer();
+          mClusterManager.setRenderer(poiRenderer);
+
           map.setOnCameraChangeListener(mClusterManager);
           map.setOnMarkerClickListener(mClusterManager);
           map.setOnInfoWindowClickListener(mClusterManager);
@@ -474,8 +476,10 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
               public boolean onClusterClick(Cluster<POI> cluster) {
 
                   clickedCluster = cluster;
-
-
+                  clusterFlag =true;
+                  layoutPager.setVisibility(View.INVISIBLE);
+                  FragmentTransaction tran = getSupportFragmentManager().beginTransaction().show(showListFragment);
+                  tran.commit();
                   return false;
               }
           });
@@ -483,24 +487,16 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
             mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<POI>() {
                 @Override
                 public boolean onClusterItemClick(POI poi) {
+
                     clickedClusterItem = poi;
-                    Marker marker=NavigationActivity.mMarkersHashMap2.get(poi);
-
-                    if(marker !=null)
-                    {
-                        marker.showInfoWindow();
-                        setInfoShowedMarker(marker);
-                    }
-
-                    destinationLat=poi.getPosition().latitude;
-                    destinationLng=poi.getPosition().longitude;
-                    marker.showInfoWindow();
+                    clusterItemFlag = true;
+                    destinationLat = poi.getPosition().latitude;
+                    destinationLng = poi.getPosition().longitude;
 
                     setBottomButtonFragment(poi);
 
-                    if(showResultListFlag == true)
-                    {
-                        FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(resultFragment);
+                    if (showResultListFlag == true) {
+                        FragmentTransaction hideTran = getSupportFragmentManager().beginTransaction().hide(resultFragment);
                         hideTran.commit();
                         FragmentTransaction tran = getSupportFragmentManager().beginTransaction().hide(showListFragment);
                         tran.commit();
@@ -510,8 +506,9 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
             });
 
           mClusterManager.setOnClusterItemInfoWindowClickListener(this);
-          addItems( myMarkerCollection);
+          addItems(myMarkerCollection);
           mClusterManager.cluster();
+
     }
 
      private void addItems(Collection<POI> myMarkerCollection){
@@ -521,6 +518,8 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
              }
         }
      }
+
+
 
     private class CustomAdapterForCluster implements GoogleMap.InfoWindowAdapter {
 
@@ -539,53 +538,77 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
         @Override
         public View getInfoContents(Marker marker) {
-            if(clickedCluster != null){
-                ArrayList<POI> clusterList = new ArrayList<POI>();
+            if(clusterFlag == true){
+                final ArrayList<POI> clusterList = new ArrayList<POI>();
                 String position = clickedCluster.getItems().iterator().next().getPoiLocation();
                 TextView clusterPosition = (TextView)myContentsView.findViewById(R.id.clusterTitle);
-                clusterPosition.setText("ClusterPosition:"+position);
+                clusterPosition.setText("Position:" + position);
 
                 for(POI item : clickedCluster.getItems()){
                     clusterList.add(item);
                 }
 
-                GridView grid = (GridView)myContentsView.findViewById(R.id.clusterGrid);
-                ClusterGridAdapter adapter = new ClusterGridAdapter(getApplicationContext(),clusterList);
-                grid.setAdapter(adapter);
+                TextView clusterItemInfo = (TextView)myContentsView.findViewById(R.id.clusterItemInfo);
+                if(clusterList.size()>2){
+                    POI item1 = clusterList.get(0);
+                    POI item2 = clusterList.get(1);
+                    clusterItemInfo.setText("Item :" + item1.getPoiLabel()+"," + item2.getPoiLabel()+",...");
+                }
+                else{
+                    POI item1 = clusterList.get(0);
+                    POI item2 = clusterList.get(1);
+                    clusterItemInfo.setText("Item :" + item1.getPoiLabel()+"," + item2.getPoiLabel());
+                }
+
 
             }
 
-            if(clickedClusterItem!= null){
+            if(clusterItemFlag == true){
                 ArrayList<POI> clusterList = new ArrayList<POI>();
                 String position = clickedClusterItem.getPoiLocation();
                 TextView clusterPosition = (TextView)myContentsView.findViewById(R.id.clusterTitle);
-                clusterPosition.setText("ClusterPosition:"+position);
+                clusterPosition.setText("Position:" + position);
                 clusterList.add(clickedClusterItem);
-                GridView grid = (GridView)myContentsView.findViewById(R.id.clusterGrid);
-                ClusterGridAdapter adapter = new ClusterGridAdapter(getApplicationContext(),clusterList);
-                grid.setAdapter(adapter);
+                TextView clusterItemInfo = (TextView)myContentsView.findViewById(R.id.clusterItemInfo);
+                clusterItemInfo.setText("Item : "+ clickedClusterItem.getPoiLabel());
+
             }
-            clickedCluster = null;
-            clickedClusterItem = null;
+
+             clusterFlag=false;
+             clusterItemFlag=false;
             return myContentsView;
         }
 
     }
 
-    public Marker getInfoShowedMarker(){
-        return InfoShowedMarker;
+    public SbuCategoryResultFragment getClusterResultFragment(){
+        return this.clusterResultFragment;
     }
 
 
-    public void setInfoShowedMarker(Marker marker){
-        InfoShowedMarker = marker;
+    public void setClickedClusterItem (POI poi){
+        this.clusterItemFlag = true;
+        this.clickedClusterItem = poi;
     }
 
-    public void hideMarkerInfo(){
-
-        InfoShowedMarker.hideInfoWindow();
+    public void setClusterItemFragToFalse(){
+        this.clusterItemFlag = false;
+    }
+    public void setClusterResultFragmentFlagToFalse(){
+        this.clusterResultFragmentFlag=false;
     }
 
+    public POI getClickedClusterItem(){
+        return this.clickedClusterItem;
+    }
+
+    public POIRenderer getPoiRenderer(){
+        return this.poiRenderer;
+    }
+
+    public Cluster<POI> getClickedCluster(){
+        return this.clickedCluster;
+    }
 
     private class SlideMenuClickListener implements ListView.OnItemClickListener {
 
@@ -685,6 +708,14 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         bottomFrag=(BottomButton) mAdapter.getItem(position);
         layoutPager.setVisibility(View.VISIBLE);
     }
+
+    public void setBottomFragWhenSlide(int position){
+        bottomFrag=(BottomButton) mAdapter.getItem(position);
+    }
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -832,8 +863,10 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
         private String keyword;
 
+
         public GetPOIItem(String str) {
             this.keyword = str;
+
         }
 
         @Override
@@ -847,7 +880,8 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         @Override
         protected void onPostExecute(JSONArray jsonArray){
         //  After getting the Json data from server, show them in map
-            ObtainData(jsonArray,keyword);
+            map.clear();
+            ObtainData(jsonArray, keyword);
 
             dailyService.dailyFlag=true;
             showResultListFlag=false;
