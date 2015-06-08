@@ -52,7 +52,7 @@
         <LinearLayout
             android:id="@+id/linear1"
             android:layout_width="fill_parent"
-            android:layout_height="100dp"
+            android:layout_height="70dp"
             android:layout_alignParentBottom="true"
             >
             <android.support.v4.view.ViewPager
@@ -74,10 +74,8 @@
         <FrameLayout
             android:id="@+id/summaryView"
             android:layout_below="@+id/bSearch"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            >
             >
         </FrameLayout>
 
@@ -101,6 +99,8 @@
 
 
         <requestFocus />
+
+
     </RelativeLayout>
     <ListView
         android:id="@+id/list_slidermenu"

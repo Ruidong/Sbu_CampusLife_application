@@ -43,14 +43,14 @@ public class SbuDailyLifeService implements OncampusAppService {
     @Override
     public String firstTextInfo(POI POI_element){
         SbuDailyLifePOI SDLPoi = (SbuDailyLifePOI)POI_element;
-        String str="Location:"+SDLPoi.getPoiLocation();
+        String str=SDLPoi.getPoiLabel();
         return str;
     }
 
     @Override
     public String secondTextInfo(POI POI_element){
         SbuDailyLifePOI SDLPoi = (SbuDailyLifePOI)POI_element;
-        String str="Available_Time:"+SDLPoi.getPoiTime();
+        String str="Location: "+SDLPoi.getPoiLocation();
         return str;
     }
 

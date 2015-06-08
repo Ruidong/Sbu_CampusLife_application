@@ -13,8 +13,11 @@ import com.google.android.gms.maps.model.Marker;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 
 public class ViewPagerChangeListener implements OnPageChangeListener {
-    private NavigationActivity activity = new NavigationActivity();
+    private NavigationActivity activity;
 
+    public ViewPagerChangeListener(NavigationActivity activity){
+        this.activity=activity;
+    }
 
 
     @Override
@@ -28,19 +31,21 @@ public class ViewPagerChangeListener implements OnPageChangeListener {
 
         if(marker !=null)
         {
+            activity.setClickedClusterItem(currentPoi);
             marker.showInfoWindow();
-            activity.setInfoShowedMarker(marker);
+
         }
 
         if(marker == null){
-            if(activity.getInfoShowedMarker() != null){
-            activity.hideMarkerInfo();
+
+            Marker marker1 = NavigationActivity.mMarkersHashMap2.get(activity.getClickedClusterItem());
+            if(marker1 != null)
+            marker1.hideInfoWindow();
+
             }
-
-
         }
 
-    }
+
 
 
 
