@@ -25,7 +25,7 @@ public class ViewPagerChangeListener implements OnPageChangeListener {
 
         POI currentPoi= NavigationActivity.bottomHash2.get(position);
 
-//        activity.setBottomFragWhenSlide(position);
+        activity.setBottomFragWhenSlide(position);
 
         LatLng  latlng =currentPoi.getPosition();
         NavigationActivity.map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 14));

@@ -2,15 +2,13 @@ package com.example.ruidong.sbu_application;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
+
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -53,14 +51,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.android.MarkerManager;
+
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.ruidong.common.tool.ApiConnector;
 import com.ruidong.common.tool.GMapV2Direction;
 import com.ruidong.common.tool.GetDirectionsAsyncTask;
-import com.ruidong.dailylife.fragment.SbuCategoryResultAdapter;
+
 import com.ruidong.dailylife.fragment.SbuCategoryResultFragment;
 import com.ruidong.dailylife.fragment.SbuDailyLifeCategoryFragment;
 import com.ruidong.slidebutton.ViewPagerAdapter;
@@ -130,8 +128,8 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
 
     public static Fragment MenuFragment;
-    public static Fragment resultFragment;
-    public static Fragment showListFragment;
+    public static SbuCategoryResultFragment resultFragment;
+//    private  ShowListButton showListFragment;
 
     public static ViewPager pager;
     public static ViewPagerAdapter mAdapter;
@@ -151,7 +149,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
     private boolean clusterItemFlag = false;
     private SbuCategoryResultFragment clusterResultFragment;
     private boolean clusterResultFragmentFlag ;
-
+    private Button showListButton;
 
 
     @Override
@@ -177,12 +175,6 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         map = fragment.getMap();
         map.setMyLocationEnabled(true);
 
-        showListFragment = new ShowListButton();
-        FragmentTransaction showTran= getSupportFragmentManager().beginTransaction().add(R.id.showListButton, showListFragment);
-        showTran.commit();
-        FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(showListFragment);
-        hideTran.commit();
-
         // Create locationManager and get userlocatoin        
         locationManager=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria= new Criteria();
@@ -199,7 +191,11 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         navigationImageButton = (ImageButton) findViewById(R.id.bNavigation);
         searchImageButton = (ImageButton) findViewById(R.id.bSearch);
         editText = (EditText) findViewById(R.id.et_location);
+        showListButton=(Button)findViewById(R.id.showListButton);
+        showListButton.setOnClickListener(new showListButtonOnClickListener(this) {
 
+        });
+        showListButton.setVisibility(View.INVISIBLE);
 
 //		    editText.setOnClickListener(new View.OnClickListener() {
 //
@@ -228,16 +224,15 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                 {
                     FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(resultFragment);
                     hideTran.commit();
-                    FragmentTransaction showTran= getSupportFragmentManager().beginTransaction().show(showListFragment);
-                    showTran.commit();
+                    showListButton.setVisibility(View.VISIBLE);
                 }
 
-                if(clusterResultFragmentFlag == true){
-                    FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(clusterResultFragment);
-                    removeTran.commit();
-                    clusterResultFragmentFlag=false;
-                }
-                
+               if(clusterResultFragmentFlag == true){
+                   FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(clusterResultFragment);
+                   clusterResultFragmentFlag=false;
+               }
+
+
             }
         });
 
@@ -261,8 +256,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                {
                    FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(resultFragment);
                    hideTran.commit();
-                   FragmentTransaction tran = getSupportFragmentManager().beginTransaction().hide(showListFragment);
-                   tran.commit();
+                   showListButton.setVisibility(View.INVISIBLE);
                }
 
                return false;
@@ -288,13 +282,27 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
             }
         });
     }
+    private class showListButtonOnClickListener implements View.OnClickListener{
+         private NavigationActivity activity;
+         showListButtonOnClickListener(NavigationActivity activity){
+             this.activity=activity;
+         }
+        @Override
+        public void onClick(View v) {
+            FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().show(NavigationActivity.resultFragment);
+            tran.commit();
+        }
+    }
+
+    public Button getShowListButton(){
+        return  this.showListButton;
+    }
 
     private class searchOnclickListener implements View.OnClickListener{
 
         @Override
         public void onClick(View v) {
-            FragmentTransaction Tran= getSupportFragmentManager().beginTransaction().remove(showListFragment);
-            Tran.commit();
+
             genService.genFlag=false;
             dailyService.dailyFlag=false;
             location = editText.getText().toString();
@@ -466,7 +474,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         }
     }
 
-    private void setUpCluster(Collection<POI> myMarkerCollection){
+    public void setUpCluster(Collection<POI> myMarkerCollection){
           mClusterManager = new ClusterManager<POI>(this,map);
           map.setInfoWindowAdapter(mClusterManager.getMarkerManager());
 
@@ -487,8 +495,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                   clickedCluster = cluster;
                   clusterFlag =true;
                   layoutPager.setVisibility(View.INVISIBLE);
-                  FragmentTransaction tran = getSupportFragmentManager().beginTransaction().show(showListFragment);
-                  tran.commit();
+                  showListButton.setVisibility(View.VISIBLE);
                   return false;
               }
           });
@@ -507,8 +514,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                     if (showResultListFlag == true) {
                         FragmentTransaction hideTran = getSupportFragmentManager().beginTransaction().hide(resultFragment);
                         hideTran.commit();
-                        FragmentTransaction tran = getSupportFragmentManager().beginTransaction().hide(showListFragment);
-                        tran.commit();
+                        showListButton.setVisibility(View.INVISIBLE);
                     }
                     return false;
                 }
@@ -594,6 +600,9 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         return this.clusterResultFragment;
     }
 
+    public ClusterManager getClusterManager(){
+        return this.mClusterManager;
+    }
 
     public void setClickedClusterItem (POI poi){
         this.clusterItemFlag = true;
@@ -606,6 +615,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
     public void setClusterResultFragmentFlagToFalse(){
         this.clusterResultFragmentFlag=false;
     }
+
 
     public POI getClickedClusterItem(){
         return this.clickedClusterItem;
@@ -644,8 +654,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                 if(resultFragment!=null) {
                     FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(resultFragment);
                     removeTran1.commit();
-                    FragmentTransaction removeTran2 = getSupportFragmentManager().beginTransaction().remove(showListFragment);
-                    removeTran2.commit();
+                    showListButton.setVisibility(View.INVISIBLE);
                     editText.setText(" ");
                 }
 
@@ -892,6 +901,12 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         protected void onPostExecute(JSONArray jsonArray){
         //  After getting the Json data from server, show them in map
             map.clear();
+            if(mClusterManager!=null){
+                mClusterManager.clearItems();
+            }
+
+
+
             ObtainData(jsonArray, keyword);
 
             dailyService.dailyFlag=true;
@@ -911,15 +926,10 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                         .add(R.id.Category_result_Container,resultFragment);
                 resultTran.commit();
 
-                showListFragment = new ShowListButton();
-                FragmentTransaction showTran= getSupportFragmentManager().beginTransaction().add(R.id.showListButton, showListFragment);
-                showTran.commit();
-                FragmentTransaction hideTran= getSupportFragmentManager().beginTransaction().hide(showListFragment);
-                hideTran.commit();
+                showListButton.setVisibility(View.INVISIBLE);
 
             }
-     //            addMarker(myMarkerCollection);
-            setUpCluster(myMarkerCollection);
+                       setUpCluster(myMarkerCollection);
 
             myMarkerCollection.clear();
 

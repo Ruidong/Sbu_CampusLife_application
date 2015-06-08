@@ -63,12 +63,14 @@
 
         </LinearLayout>
 
-        <FrameLayout
+        <Button
             android:id="@+id/showListButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Result List"
+            android:background="#CC9999"
             android:layout_alignParentBottom="true">
-        </FrameLayout>
+        </Button>
 
 
         <FrameLayout
