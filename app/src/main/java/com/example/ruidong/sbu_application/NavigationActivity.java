@@ -2,6 +2,8 @@ package com.example.ruidong.sbu_application;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import org.json.JSONArray;
@@ -230,6 +232,12 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                     showTran.commit();
                 }
 
+                if(clusterResultFragmentFlag == true){
+                    FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(clusterResultFragment);
+                    removeTran.commit();
+                    clusterResultFragmentFlag=false;
+                }
+                
             }
         });
 
@@ -334,6 +342,8 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
             bottom.setPOI(poiElement);
         }
         mAdapter.bottomButtonList=fragmentlists;
+
+
         pager.setAdapter(mAdapter);
     }
 
@@ -422,7 +432,6 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                      FragmentTransaction resultTran = getSupportFragmentManager().beginTransaction()
                              .add(R.id.Cluster_result_Container, clusterResultFragment);
                      clusterResultFragmentFlag = true;
-                     resultTran.addToBackStack(null);
                      resultTran.commit();
 
                  }
@@ -706,7 +715,9 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         Integer position = bottomHash1.get(currentPOI);
         pager.setCurrentItem(position);
         bottomFrag=(BottomButton) mAdapter.getItem(position);
-        layoutPager.setVisibility(View.VISIBLE);
+        if(layoutPager != null) {
+            layoutPager.setVisibility(View.VISIBLE);
+        }
     }
 
     public void setBottomFragWhenSlide(int position){
