@@ -31,7 +31,6 @@ public class UserHistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.user_history_list,null);
         list = (ListView)view.findViewById(R.id.user_history_list);
-        UserHistoryAdapter adapter = new UserHistoryAdapter(getActivity(),historyList);
 
         Collections.sort(historyList, new Comparator<InputHistory>() {
             public int compare(InputHistory input1, InputHistory input2) {
@@ -39,6 +38,12 @@ public class UserHistoryFragment extends Fragment {
                 return input2.getCount().compareTo(input1.getCount());
             }
         });
+        for(InputHistory input : historyList){
+        System.out.println("index + title"+historyList.indexOf(input)+input.getTitle());}
+        System.out.println("position 0" + historyList.get(0).getTitle());
+
+
+        UserHistoryAdapter adapter = new UserHistoryAdapter(getActivity(),historyList);
 
         list.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -61,16 +66,12 @@ public class UserHistoryFragment extends Fragment {
                     }
                 }
 
-            if(activity.getcountFlag() == false){
-                activity.saveHistory(new InputHistory(str, 1));
-            }
-
 
 
                 Intent intent = new Intent();
                 Bundle  backpack = new Bundle();
-                String str1 = historyList.get(position).getTitle();
-                backpack.putString("userInput", str1);
+                System.out.println(position+"----------------"+str);
+                backpack.putString("userInput", str);
                 intent.putExtras(backpack);
                 getActivity().setResult(Activity.RESULT_OK, intent);
                 getActivity().finish();

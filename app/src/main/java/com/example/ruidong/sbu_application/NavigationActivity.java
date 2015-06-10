@@ -40,6 +40,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -210,13 +211,16 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
 		    editText.setOnClickListener(new View.OnClickListener() {
 
-				@Override
-				public void onClick(View v) {
-                     Intent intent = new Intent();
-                     intent.setClass(NavigationActivity.this,InputSearchActivity.class);
-                     startActivityForResult(intent,0);
-				}
-		    });
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent();
+                    intent.setClass(NavigationActivity.this, InputSearchActivity.class);
+                    startActivityForResult(intent, 0);
+                }
+            });
+
+
+        new GetPOIItem("food").execute(new ApiConnector());
 
 
         searchImageButton.setOnClickListener(new searchOnclickListener() {
@@ -323,8 +327,34 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
             // Determine which service's poi is relative with user input.
             if( location != null ) {
 
-                new GetPOIItem(location).execute(new ApiConnector());
+                map.clear();
+               if(mClusterManager!=null){
+                mClusterManager.clearItems();
             }
+               dailyService.dailyFlag=true;
+               showResultListFlag=false;
+
+               myMarkerCollection=dailyService.getTargetPOI(location);
+               setBottomButtonFragmentList(myMarkerCollection);
+
+              //If there are more than one POI related to user keyword, create a list to show these poi.
+               if(myMarkerCollection.size()>1){
+                showResultListFlag=true;
+
+                resultFragment=new SbuCategoryResultFragment();
+                ((SbuCategoryResultFragment) resultFragment).setTargetList(myMarkerCollection);
+
+                FragmentTransaction resultTran=getSupportFragmentManager().beginTransaction()
+                        .add(R.id.Category_result_Container,resultFragment);
+                resultTran.commit();
+
+                showListButton.setVisibility(View.INVISIBLE);
+
+              }
+                       setUpCluster(myMarkerCollection);
+
+             myMarkerCollection.clear();
+             }
             else
                 myMarkerCollection = null;
         }
@@ -908,34 +938,40 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         @Override
         protected void onPostExecute(JSONArray jsonArray){
         //  After getting the Json data from server, show them in map
-            map.clear();
-            if(mClusterManager!=null){
-                mClusterManager.clearItems();
-            }
-            ObtainData(jsonArray, keyword);
-            dailyService.dailyFlag=true;
-            showResultListFlag=false;
-
-            myMarkerCollection=dailyService.getTargetPOI(keyword);
-            setBottomButtonFragmentList(myMarkerCollection);
-
-            //If there are more than one POI related to user keyword, create a list to show these poi.
-            if(myMarkerCollection.size()>1){
-                showResultListFlag=true;
-
-                resultFragment=new SbuCategoryResultFragment();
-                ((SbuCategoryResultFragment) resultFragment).setTargetList(myMarkerCollection);
-
-                FragmentTransaction resultTran=getSupportFragmentManager().beginTransaction()
-                        .add(R.id.Category_result_Container,resultFragment);
-                resultTran.commit();
-
-                showListButton.setVisibility(View.INVISIBLE);
-
-            }
-                       setUpCluster(myMarkerCollection);
-
-            myMarkerCollection.clear();
+//            map.clear();
+//            if(mClusterManager!=null){
+//                mClusterManager.clearItems();
+//            }
+              ObtainData(jsonArray, keyword);
+              if(dailyService.dailyMap.size()>0) {
+                  Toast.makeText(getApplicationContext(), "Obtain data success", Toast.LENGTH_LONG).show();
+              }
+              else{
+                  Toast.makeText(getApplicationContext(), "Obtain data failed", Toast.LENGTH_LONG).show();
+              }
+//            dailyService.dailyFlag=true;
+//            showResultListFlag=false;
+//
+//            myMarkerCollection=dailyService.getTargetPOI(keyword);
+//            setBottomButtonFragmentList(myMarkerCollection);
+//
+//            //If there are more than one POI related to user keyword, create a list to show these poi.
+//            if(myMarkerCollection.size()>1){
+//                showResultListFlag=true;
+//
+//                resultFragment=new SbuCategoryResultFragment();
+//                ((SbuCategoryResultFragment) resultFragment).setTargetList(myMarkerCollection);
+//
+//                FragmentTransaction resultTran=getSupportFragmentManager().beginTransaction()
+//                        .add(R.id.Category_result_Container,resultFragment);
+//                resultTran.commit();
+//
+//                showListButton.setVisibility(View.INVISIBLE);
+//
+//            }
+//                       setUpCluster(myMarkerCollection);
+//
+//            myMarkerCollection.clear();
 
 
         }

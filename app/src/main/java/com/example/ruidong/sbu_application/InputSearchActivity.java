@@ -103,10 +103,9 @@ public class InputSearchActivity extends FragmentActivity {
             historyList = new ArrayList<InputHistory>();
         }
         historyList.add(input);
-        System.out.println("........................history" + historyList.size());
+
         String json = new Gson().toJson(historyList);
         editor.putString("InputHistory", json);
-        System.out.println("........................jason save" + json);
 
         editor.commit();
 
@@ -118,9 +117,6 @@ public class InputSearchActivity extends FragmentActivity {
             Type type = new TypeToken<ArrayList<InputHistory>>(){}.getType();
             String json = preference.getString("InputHistory", "");
             ArrayList<InputHistory> inputList = new Gson().fromJson(json, type);
-            System.out.println("........................jason load" + json);
-            if(inputList!=null)
-            System.out.println("........................input"+inputList.size());
             return inputList;
 
     }
