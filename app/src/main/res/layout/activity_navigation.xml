@@ -26,6 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
+            android:focusableInTouchMode="false"
             android:src="@drawable/navigate_button" />
 
         <EditText
@@ -88,6 +89,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="100dp">
         </FrameLayout>
+
+
 
         <FrameLayout
             android:id="@+id/Category_result_Container"

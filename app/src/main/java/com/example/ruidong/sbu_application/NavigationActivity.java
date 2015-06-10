@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -150,7 +151,17 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
     private SbuCategoryResultFragment clusterResultFragment;
     private boolean clusterResultFragmentFlag ;
     private Button showListButton;
+    private boolean InfoWindowClickFlg;
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+           if(resultCode == RESULT_OK){
+               Bundle bundle = data.getExtras();
+               String str = bundle.getString("userInput");
+               editText.setText(str);
+           }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,15 +208,16 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         });
         showListButton.setVisibility(View.INVISIBLE);
 
-//		    editText.setOnClickListener(new View.OnClickListener() {
-//
-//				@Override
-//				public void onClick(View v) {
-//					//  Generate user input history listview
-//
-//				}
-//
-//		    });
+		    editText.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+                     Intent intent = new Intent();
+                     intent.setClass(NavigationActivity.this,InputSearchActivity.class);
+                     startActivityForResult(intent,0);
+				}
+		    });
+
 
         searchImageButton.setOnClickListener(new searchOnclickListener() {
 
@@ -229,6 +241,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
                if(clusterResultFragmentFlag == true){
                    FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(clusterResultFragment);
+                   removeTran.commit();
                    clusterResultFragmentFlag=false;
                }
 
@@ -317,26 +330,6 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         }
     }
 
-
-
-    // Based on the POI collection got from server, add corresponding marker on the map   
-    public void addMarker(Collection<POI> myMarkerCollection){
-        
-        map.clear();
-        for(POI PoiElement: myMarkerCollection){
-            MarkerOptions option= new MarkerOptions()
-                    .position((PoiElement.getPosition()))
-                    .title(PoiElement.getPoiLabel());
-            Marker currentMarker = map.addMarker(option);
-            //Put the Marker and corresponding poiElement in two hashmaps
-            mMarkersHashMap1.put(currentMarker, PoiElement); 
-            mMarkersHashMap2.put(PoiElement, currentMarker);
-
-            LatLng  destination =new LatLng (destinationLat,destinationLng);
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 14));
-
-        }
-    }
 
     // Based on POI collection, set each BottomButton Fragment, two parameters needed for a ButtomButton are Text Inforamtion, which are defined in each service.
     // Then add these BottomButton into a list, initialize the ViewPager
@@ -428,6 +421,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
     @Override
     public void onClusterInfoWindowClick(Cluster<POI> cluster) {
+           if(InfoWindowClickFlg == true){
              if(clusterResultFragmentFlag == false) {
                  if (cluster.getSize() > 1) {
                      clusterResultFragment = new SbuCategoryResultFragment();
@@ -441,10 +435,11 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                              .add(R.id.Cluster_result_Container, clusterResultFragment);
                      clusterResultFragmentFlag = true;
                      resultTran.commit();
-
+                  }
                  }
              }
     }
+
 
     @Override
     public void onClusterItemInfoWindowClick(POI poi) {
@@ -472,6 +467,15 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
             super.onClusterItemRendered(clusterItem, marker);
             mMarkersHashMap2.put(clusterItem, marker);
         }
+
+        @Override
+        protected void onClusterRendered(Cluster<POI> cluster, Marker marker) {
+            super.onClusterRendered(cluster, marker);
+
+            for(POI item: cluster.getItems()){
+                mMarkersHashMap2.put(item,marker);
+            }
+        }
     }
 
     public void setUpCluster(Collection<POI> myMarkerCollection){
@@ -496,6 +500,8 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                   clusterFlag =true;
                   layoutPager.setVisibility(View.INVISIBLE);
                   showListButton.setVisibility(View.VISIBLE);
+                  destinationLat = cluster.getPosition().latitude;
+                  destinationLng = cluster.getPosition().longitude;
                   return false;
               }
           });
@@ -574,7 +580,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                     POI item2 = clusterList.get(1);
                     clusterItemInfo.setText("Item :" + item1.getPoiLabel()+"," + item2.getPoiLabel());
                 }
-
+                InfoWindowClickFlg = true;
 
             }
 
@@ -586,11 +592,13 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                 clusterList.add(clickedClusterItem);
                 TextView clusterItemInfo = (TextView)myContentsView.findViewById(R.id.clusterItemInfo);
                 clusterItemInfo.setText("Item : "+ clickedClusterItem.getPoiLabel());
+                InfoWindowClickFlg = false;
 
             }
 
              clusterFlag=false;
              clusterItemFlag=false;
+
             return myContentsView;
         }
 
@@ -904,11 +912,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
             if(mClusterManager!=null){
                 mClusterManager.clearItems();
             }
-
-
-
             ObtainData(jsonArray, keyword);
-
             dailyService.dailyFlag=true;
             showResultListFlag=false;
 

@@ -25,4 +25,5 @@ dependencies {
     compile 'com.google.android.gms:play-services:7.3.0'
     compile 'com.google.guava:guava:16.0.1'
     compile 'com.google.maps.android:android-maps-utils:0.3+'
+    compile 'com.google.code.gson:gson:2.2.4'
 }
