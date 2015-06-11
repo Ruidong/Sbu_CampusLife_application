@@ -8,6 +8,7 @@ import com.example.ruidong.sbu_application.POI;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 
@@ -33,9 +34,11 @@ public class GeneralService implements OncampusAppService {
         return str;
     }
     @Override
-    public Collection<POI> getTargetPOI(String str){
+    public ArrayList<POI> getTargetPOI(String str){
         Collection<POI> myPOICollection = genMap.get(str);
-        return myPOICollection;
+        ArrayList<POI> list = new ArrayList<>();
+        list.addAll(myPOICollection);
+        return list;
     }
     @Override
     public boolean checkMap(String str){

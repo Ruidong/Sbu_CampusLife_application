@@ -6,6 +6,7 @@ package com.ruidong.specific.service;
 import com.example.ruidong.sbu_application.OncampusAppService;
 import com.example.ruidong.sbu_application.POI;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 
@@ -30,7 +31,7 @@ public class CourseManagmentService implements OncampusAppService {
     }
 
     @Override
-    public Collection<POI> getTargetPOI(String str) {
+    public ArrayList<POI> getTargetPOI(String str) {
         // TODO Auto-generated method stub
         return null;
     }

@@ -23,30 +23,21 @@ public class ViewPagerChangeListener implements OnPageChangeListener {
     @Override
     public void onPageSelected(int position) {
 
-        POI currentPoi= NavigationActivity.bottomHash2.get(position);
+        POI currentPoi = NavigationActivity.bottomHash2.get(position);
 
         activity.setBottomFragWhenSlide(position);
 
-        LatLng  latlng =currentPoi.getPosition();
-        NavigationActivity.map.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 14));
-        Marker marker=NavigationActivity.mMarkersHashMap2.get(currentPoi);
+        LatLng latlng = currentPoi.getPosition();
+        NavigationActivity.map.moveCamera(CameraUpdateFactory.newLatLng(currentPoi.getPosition()));
+        Marker marker = NavigationActivity.mMarkersHashMap2.get(currentPoi);
 
-        if(marker !=null)
-        {
+        if (marker != null) {
             activity.setClickedClusterItem(currentPoi);
             marker.showInfoWindow();
 
         }
 
-        if(marker == null){
-
-            Marker marker1 = NavigationActivity.mMarkersHashMap2.get(activity.getClickedClusterItem());
-            if(marker1 != null)
-            marker1.hideInfoWindow();
-
-            }
-        }
-
+    }
 
 
 

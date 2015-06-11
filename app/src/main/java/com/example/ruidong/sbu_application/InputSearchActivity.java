@@ -6,9 +6,14 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -22,12 +27,15 @@ import java.util.ArrayList;
 public class InputSearchActivity extends FragmentActivity {
     private Button back;
     private Button done;
-    private EditText editText;
+    private AutoCompleteTextView acTextView;
     private UserHistoryFragment userHistoryFragment;
     private ArrayList<InputHistory> historyList = new ArrayList<InputHistory>();
     private SharedPreferences historyPreference;
     private Button clear;
     private boolean countFlag = false;
+    private ArrayList<String> hintList1;
+    private ArrayList<String> hintList2;
+    private RelativeLayout layout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +43,36 @@ public class InputSearchActivity extends FragmentActivity {
         back = (Button)findViewById(R.id.back);
         done = (Button)findViewById(R.id.done);
         clear = (Button)findViewById(R.id.clear);
-        editText = (EditText)findViewById(R.id.userInput);
+        layout=(RelativeLayout)findViewById(R.id.layout_container);
+        acTextView = (AutoCompleteTextView)findViewById(R.id.userInput);
+        hintList1 = NavigationActivity.read(this,"Hintlist1.txt");
+        hintList2 = NavigationActivity.read(this,"Hintlist2.txt");
+        for(String str : hintList2){
+            hintList1.add(str);
+        }
+        System.out.println(hintList1);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.hint_list_adapter,R.id.text,hintList1);
+        acTextView.setThreshold(1);
+        acTextView.setAdapter(adapter);
+
+        acTextView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,7 +84,7 @@ public class InputSearchActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
 
-                String str = editText.getText().toString();
+                String str = acTextView.getText().toString();
                 if(historyList !=null){
                 for(InputHistory input: historyList){
                     if(str.equals(input.getTitle())){

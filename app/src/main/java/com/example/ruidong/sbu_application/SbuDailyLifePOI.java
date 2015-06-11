@@ -13,20 +13,30 @@ public class SbuDailyLifePOI extends POI  {
     private String poiPhone;
     private Double poiLatitude;
     private Double poiLongitude;
+    private String poiDescription;
+    private String poiCategory;
     private int poiId;
     private final LatLng mPosition;
 
 
-    public SbuDailyLifePOI(int id, String label,String location,String time,String phone,LatLng postion)
+    public SbuDailyLifePOI(int id, String category, String label, String location, String time, String phone, LatLng position, String description)
     {
-        super(id, label, location, postion);
+        super(id, label, location, position);
         this.poiLabel = label;
+        this.poiCategory=category;
         this.poiLocation=location;
         this.poiTime=time;
         this.poiPhone=phone;
-        mPosition = postion;
+        mPosition = position;
         this.poiId=id;
+        this.poiDescription = description;
     }
+
+
+
+
+
+
 
     public String getPoiLabel()
     {
@@ -79,6 +89,20 @@ public class SbuDailyLifePOI extends POI  {
     public void setmLongitude(Double Longitude)
     {
         this.poiLongitude = Longitude;
+    }
+
+    public String getPoiCategory(){
+        return  this.poiCategory;
+    }
+    public void setPoiCategory(String category){
+        this.poiCategory = category;
+    }
+
+    public String getPoiDescription(){
+        return  this.poiDescription;
+    }
+    public void setPoiDescription(String description){
+        this.poiDescription = description;
     }
 
 

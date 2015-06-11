@@ -1,30 +1,28 @@
 package com.ruidong.common.tool;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import android.util.Log;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import android.util.Log;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class ApiConnector {
+public class GetAliaseConnector {
 
     public JSONArray GetPOI(){
 
-        String url = "http://1-dot-river-formula-96210.appspot.com/version3servlet";
+        String url = "http://1-dot-river-formula-96210.appspot.com/aliasesServlet";
 
         //Get HttpResponse Object from url,
         //Get HttpEntity from Http Response Object

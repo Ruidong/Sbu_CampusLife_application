@@ -8,25 +8,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Back"
-        android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/userInput"
-        android:layout_toStartOf="@+id/userInput" />
-    <EditText
+
+        android:layout_alignBottom="@+id/userInput"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+    <AutoCompleteTextView
         android:id="@+id/userInput"
         android:layout_width="120dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/back"
-        android:layout_centerHorizontal="true" />
-    <FrameLayout
-        android:id="@+id/auto_hint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/userInput"
-        android:layout_alignLeft="@+id/Listtitle"
-        android:layout_alignRight="@+id/Listtitle"
-        >
-
-    </FrameLayout>
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/back"
+        android:layout_marginTop="46dp"
+        android:layout_toLeftOf="@+id/done"
+        android:layout_toStartOf="@+id/done" />
 
     <Button
 
@@ -34,40 +28,56 @@
         android:layout_height="wrap_content"
         android:text="Done"
         android:id="@+id/done"
-        android:layout_alignBottom="@+id/back"
-        android:layout_toRightOf="@+id/userInput"
-        android:layout_toEndOf="@+id/userInput" />
-
+        android:layout_alignBottom="@+id/userInput"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+    <RelativeLayout
+        android:id="@+id/layout_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="42dp"
         android:text="Input History"
         android:id="@+id/Listtitle"
-        android:layout_below="@+id/userInput"
-        android:layout_alignLeft="@+id/back"
-        android:layout_alignStart="@+id/back"
-        android:layout_alignRight="@+id/done"
-        android:layout_alignEnd="@+id/done"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:background="#FFFF99"
         android:textSize="25sp"
-        android:textColor="#0099FF"/>
-    <FrameLayout
-        android:id="@+id/user_history_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/Listtitle"
-        android:layout_alignLeft="@+id/Listtitle"
-        android:layout_alignRight="@+id/Listtitle">
+        android:textColor="#0099FF"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 
-    </FrameLayout>
-
-    <Button
+        <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="x"
         android:id="@+id/clear"
-        android:layout_alignBottom="@+id/user_history_container"
-        android:layout_toRightOf="@+id/auto_hint"
-        android:layout_toEndOf="@+id/auto_hint" />
+        android:layout_alignBottom="@+id/Listtitle"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+        <FrameLayout
+            android:id="@+id/user_history_container"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/Listtitle"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:id="@+id/imageView"
+        android:src="@drawable/line"
+        android:layout_below="@+id/back"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>
