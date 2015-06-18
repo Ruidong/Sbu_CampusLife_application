@@ -16,17 +16,19 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ruidong.courseManager.fragment.CourseSumView;
 import com.ruidong.dailylife.fragment.SbuDailySumView;
 
 public class BottomButton extends Fragment{
 
     public TextView text1;
     public TextView text2;
-    public Fragment dailySumViewBot;
+    public Fragment SumViewBot;
     private LinearLayout bottombutton;
     public boolean DailySumFlag;
     private POI bottomButtonPOI;
     String msg1,msg2;
+    private NavigationActivity activity;
     public BottomButton() {
 
     }
@@ -49,7 +51,7 @@ public class BottomButton extends Fragment{
                              Bundle savedInstanceState) {
 
         View view= inflater.inflate(R.layout.bottom_button, container, false);
-
+        activity = (NavigationActivity)getActivity();
 
         text1=(TextView)view.findViewById(R.id.textView1);
         text2=(TextView)view.findViewById(R.id.textView2);
@@ -66,15 +68,26 @@ public class BottomButton extends Fragment{
 
             @Override
             public void onClick(View v) {
+                if(activity.getDailyFlag()){
                 SbuDailySumView dailySumView = new SbuDailySumView();
                 dailySumView.setPOI(bottomButtonPOI);
-                dailySumView.setMsg(msg1,msg2);
+                dailySumView.setMsg(msg1, msg2);
                 FragmentTransaction dailySumViewStart = getFragmentManager().beginTransaction().add(R.id.summaryView,dailySumView);
                 dailySumViewStart.show(dailySumView);
                 dailySumViewStart.addToBackStack(null);
                 dailySumViewStart.commit();
-                dailySumViewBot=dailySumView;
-                DailySumFlag=true;
+                SumViewBot =dailySumView;
+                }
+                else if(activity.getCourseFlag()){
+                    CourseSumView courseSumView= new CourseSumView();
+                    courseSumView.setPOI(bottomButtonPOI);
+                    courseSumView.setMsg(msg1,msg2);
+                    FragmentTransaction dailySumViewStart = getFragmentManager().beginTransaction().add(R.id.summaryView,courseSumView);
+                    dailySumViewStart.show(courseSumView);
+                    dailySumViewStart.addToBackStack(null);
+                    dailySumViewStart.commit();
+                    SumViewBot =courseSumView;
+                }
             }
         });
 

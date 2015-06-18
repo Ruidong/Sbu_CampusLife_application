@@ -32,12 +32,6 @@ public class SbuDailyLifePOI extends POI  {
         this.poiDescription = description;
     }
 
-
-
-
-
-
-
     public String getPoiLabel()
     {
         return poiLabel;

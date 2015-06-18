@@ -50,7 +50,6 @@ public class InputSearchActivity extends FragmentActivity {
         for(String str : hintList2){
             hintList1.add(str);
         }
-        System.out.println(hintList1);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.hint_list_adapter,R.id.text,hintList1);
         acTextView.setThreshold(1);
         acTextView.setAdapter(adapter);

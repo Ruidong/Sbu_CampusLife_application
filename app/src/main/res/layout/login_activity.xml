@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+
+    <EditText
+        android:id="@+id/usernameEdit"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="84dp"
+        android:hint="username"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:id="@+id/passwordEdit"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:hint="password"
+        android:inputType="textPassword"
+        android:layout_below="@+id/usernameEdit"
+        android:layout_alignLeft="@+id/usernameEdit"
+        android:layout_alignStart="@+id/usernameEdit" />
+
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login"
+        android:layout_below="@+id/passwordEdit"
+        android:layout_alignLeft="@+id/passwordEdit"
+        android:layout_alignStart="@+id/passwordEdit" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:id="@+id/Save_account"
+        android:layout_below="@+id/passwordEdit"
+        android:layout_alignRight="@+id/passwordEdit"
+        android:layout_alignEnd="@+id/passwordEdit" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Solar Account"
+        android:id="@+id/textView5"
+        android:layout_alignParentTop="true"
+        android:layout_alignLeft="@+id/usernameEdit"
+        android:layout_alignStart="@+id/usernameEdit"
+        android:layout_marginTop="33dp"
+        android:layout_alignRight="@+id/usernameEdit"
+        android:layout_alignEnd="@+id/usernameEdit" />
+
+
+</RelativeLayout>

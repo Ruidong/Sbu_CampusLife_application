@@ -59,7 +59,7 @@ public class SbuDailyLifeService implements OncampusAppService {
     }
 
     @Override
-    public ArrayList<POI> getTargetPOI(String str) {
+       public ArrayList<POI> getTargetPOI(String str) {
         Collection<POI> myPOICollection =dailyMap.get(str);
         ArrayList<POI> list = new ArrayList<>();
         list.addAll(myPOICollection);
