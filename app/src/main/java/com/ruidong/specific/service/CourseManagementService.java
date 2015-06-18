@@ -56,6 +56,7 @@ public class CourseManagementService implements OncampusAppService {
     }
 
     public void setCourseMap(){
+        courseMap.clear();
         courseMap.put("my course", new CourseManagerPOI(1,"AMS542","Analysis of Algorithms","JAVITS LECTR 103","MoFr 1:00PM - 2:20PM"
         ,"Jie Gao",new LatLng(40.912960,-73.122048)));
         courseMap.put("my course", new CourseManagerPOI(2,"ESE 511","Solid-State Electronics","PHYSICS P113 ","MoFr 1:00PM - 2:20PM"

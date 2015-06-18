@@ -8,11 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.Toast;
 
 import com.example.ruidong.sbu_application.CourseManagerPOI;
 import com.example.ruidong.sbu_application.NavigationActivity;
 import com.example.ruidong.sbu_application.POI;
 import com.example.ruidong.sbu_application.R;
+import com.example.ruidong.sbu_application.SbuDailyLifePOI;
 import com.google.android.gms.maps.model.Marker;
 import com.ruidong.dailylife.fragment.SbuCategoryResultFragment;
 import com.ruidong.slidebutton.ViewPagerAdapter;
@@ -20,6 +22,8 @@ import com.ruidong.specific.service.CourseManagementService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -32,8 +36,9 @@ public class CourseScheduleFragment extends Fragment {
     private NavigationActivity activity;
     private Button history;
     private CourseScheduleFragment courseScheduleFragment;
-    public  ArrayList<POI> resultPoiList;
+    public  ArrayList<POI> resultPoiList = new ArrayList<>();
     private Button showMarker;
+    private boolean showMarkerFlag;
     public CourseScheduleFragment(){
 
     }
@@ -66,11 +71,11 @@ public class CourseScheduleFragment extends Fragment {
         list.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                if(showMarkerFlag == true){
                 CourseHistoryFragment historyFragment = activity.getCourseHistoryFragment();
                 courseScheduleFragment = historyFragment.getCourseScheduleFragment();
                 FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().hide(courseScheduleFragment);
                 tran1.commit();
-
                 POI currentPOI = courseDetailData.get(weekList.get(groupPosition)).get(childPosition);
                 Marker marker = NavigationActivity.mMarkersHashMap2.get(currentPOI);
                 activity.setClickedClusterItem(currentPOI);
@@ -79,7 +84,10 @@ public class CourseScheduleFragment extends Fragment {
                 }
                 activity.setBottomButtonFragment(currentPOI);
                 activity.setClusterItemFragToFalse();
-                activity.setClusterResultFragmentFlagToFalse();
+                activity.setClusterResultFragmentFlagToFalse();}
+                else{
+                    Toast.makeText(getActivity(),"Please Click showMarker Button to set marker",Toast.LENGTH_SHORT).show();
+                }
                 return true;
             }
         });
@@ -88,6 +96,8 @@ public class CourseScheduleFragment extends Fragment {
         showMarker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showMarkerFlag =true;
+                activity.setDailyFlag(false);
                 activity.setCourseFlag(true);
                 NavigationActivity.myMarkerList = resultPoiList;
                 activity.setBottomButtonFragmentList(resultPoiList);
@@ -104,7 +114,11 @@ public class CourseScheduleFragment extends Fragment {
 
 
     public  void setTargetList(ArrayList<POI> courseScheduleList){
-        resultPoiList = courseScheduleList;
+        System.out.println("courseScheduleList Size: "+courseScheduleList.size());
+        System.out.println("resultPoiList Size :" + resultPoiList.size());
+
+
+        resultPoiList.addAll(removeDuplicateWithOrder(courseScheduleList));
         weekList.add("Monday");
         weekList.add("Tuesday");
         weekList.add("Wednesday");
@@ -124,6 +138,13 @@ public class CourseScheduleFragment extends Fragment {
                  }
             }
         }
+    }
+    private ArrayList<POI> removeDuplicateWithOrder(ArrayList<POI> list) {
+        Set<POI> set = new HashSet<POI>(list.size());
+        set.addAll(list);
+        ArrayList<POI> newList = new ArrayList<POI>(set.size());
+        newList.addAll(set);
+        return newList;
     }
 
 }

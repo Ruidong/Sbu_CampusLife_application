@@ -26,6 +26,7 @@ public class CourseHistoryFragment extends Fragment {
     private Button schedule;
     private Fragment historyFragment;
     private CourseScheduleFragment courseScheduleFragment;
+    private Fragment resultFragment;
     public CourseHistoryFragment(){
 
     }
@@ -46,6 +47,20 @@ public class CourseHistoryFragment extends Fragment {
         schedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                NavigationActivity.map.clear();
+                if(NavigationActivity.myMarkerList!=null){
+                NavigationActivity.myMarkerList.clear();}
+                NavigationActivity.showResultListFlag=false;
+
+                if(NavigationActivity.dailyResultFragment !=null){
+                    FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().remove(NavigationActivity.dailyResultFragment);
+                    tran.commit();
+                }
+                if(NavigationActivity.courseResultFragment !=null){
+                    FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().remove(NavigationActivity.courseResultFragment);
+                    tran.commit();
+                }
+
                 historyFragment=activity.getCourseHistoryFragment();
                 FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().hide(historyFragment);
                 tran.commit();

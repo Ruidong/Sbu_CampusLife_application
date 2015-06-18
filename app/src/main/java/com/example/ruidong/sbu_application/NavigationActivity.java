@@ -307,6 +307,10 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                     }
                     showListButton.setVisibility(View.INVISIBLE);
                 }
+                if(courseHistoryFragment.getCourseScheduleFragment()!=null){
+                    FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(courseHistoryFragment.getCourseScheduleFragment());
+                    removeTran1.commit();
+                }
 
                 return false;
             }
@@ -680,6 +684,10 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                           hideTran.commit();
                       }
                   }
+                  if(courseHistoryFragment.getCourseScheduleFragment()!=null){
+                      FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(courseHistoryFragment.getCourseScheduleFragment());
+                      removeTran1.commit();
+                  }
                   return false;
               }
           });
@@ -704,6 +712,10 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                             hideTran.commit();
                         }
                         showListButton.setVisibility(View.INVISIBLE);
+                    }
+                    if(courseHistoryFragment.getCourseScheduleFragment()!=null){
+                        FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(courseHistoryFragment.getCourseScheduleFragment());
+                        removeTran1.commit();
                     }
                     return false;
                 }
@@ -866,16 +878,22 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                 tran4.commit();
 
                 if(dailyResultFragment !=null) {
-                    FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(dailyResultFragment);
+                    FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().hide(dailyResultFragment);
                     removeTran1.commit();
-                    showListButton.setVisibility(View.INVISIBLE);
+                    showListButton.setVisibility(View.VISIBLE);
                     editText.setText(" ");
                 }
                 if(courseResultFragment !=null) {
-                    FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(courseResultFragment);
+                    FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().hide(courseResultFragment);
+                    removeTran1.commit();
+                    showListButton.setVisibility(View.VISIBLE);
+                    editText.setText(" ");
+                }
+
+                if(courseHistoryFragment.getCourseScheduleFragment()!=null){
+                    FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(courseHistoryFragment.getCourseScheduleFragment());
                     removeTran1.commit();
                     showListButton.setVisibility(View.INVISIBLE);
-                    editText.setText(" ");
                 }
 
 
