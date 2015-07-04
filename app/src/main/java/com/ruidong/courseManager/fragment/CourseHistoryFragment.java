@@ -86,9 +86,9 @@ public class CourseHistoryFragment extends Fragment {
                 tran.commit();
                 courseScheduleFragment =  new CourseScheduleFragment();
                 FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().add(R.id.Category_result_Container,courseScheduleFragment);
-                tran1.addToBackStack(null);
+//                tran1.addToBackStack(null);
                 tran1.commit();
-                System.out.println("2222222222222"+courseScheduleFragment==null);
+//                System.out.println("2222222222222"+courseScheduleFragment==null);
             }
         });
 
