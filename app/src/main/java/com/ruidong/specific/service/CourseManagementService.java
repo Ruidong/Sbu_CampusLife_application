@@ -69,6 +69,7 @@ public class CourseManagementService implements OncampusAppService {
 
     public void storeData() throws JSONException {
 
+//        JSONArray array = jsonObject.getJSONArray("Course History");
         for(int i=0; i<array.length(); i++){
 
             JSONObject json = null;
@@ -82,6 +83,11 @@ public class CourseManagementService implements OncampusAppService {
             }
         }
     }
+
+//    public void setData(JSONObject jsonObject) throws JSONException {
+//        storeData(jsonObject);
+//    }
+
 
     public void obtainData() throws JSONException {
          String sss = "[{\"Description\":\"Analysis of Algorithms\",\"Course\":\"AMS 542\",\"Units\":\"3.00\",\"Grade\":\" \",\"Term\":\"Fall 2015\"},{\"Description\":\"Theory of Database Systems\",\"Course\":\"CSE 532\",\"Units\":\"3.00\",\"Grade\":\"A\",\"Term\":\"Spring 2015\"},{\"Description\":\"Stochastic Systems\",\"Course\":\"ESE 503\",\"Units\":\"3.00\",\"Grade\":\"B+\",\"Term\":\"Fall 2014\"},{\"Description\":\"Advncd Dgtl Systm Dsgn and Gn\",\"Course\":\"ESE 507\",\"Units\":\"3.00\",\"Grade\":\"B\",\"Term\":\"Fall 2014\"},{\"Description\":\"Solid-State Electronics\",\"Course\":\"ESE 511\",\"Units\":\"3.00\",\"Grade\":\" \",\"Term\":\"Fall 2015\"},{\"Description\":\"Reliability Theory\",\"Course\":\"ESE 540\",\"Units\":\"3.00\",\"Grade\":\"A\",\"Term\":\"Fall 2014\"},{\"Description\":\"Basic concepts of mobile cloud\",\"Course\":\"ESE 543\",\"Units\":\"3.00\",\"Grade\":\"A\",\"Term\":\"Spring 2015\"},{\"Description\":\"Networking Algorithms and Anal\",\"Course\":\"ESE 546\",\"Units\":\"3.00\",\"Grade\":\"A\",\"Term\":\"Fall 2014\"},{\"Description\":\"Compu Model for Compu Engineer\",\"Course\":\"ESE 554\",\"Units\":\"3.00\",\"Grade\":\"A-\",\"Term\":\"Spring 2015\"},{\"Description\":\"Pattern Recognition\",\"Course\":\"ESE 588\",\"Units\":\"3.00\",\"Grade\":\"A-\",\"Term\":\"Spring 2015\"},{\"Description\":\"Research Master's students\",\"Course\":\"ESE 599\",\"Units\":\"1.00\",\"Grade\":\" \",\"Term\":\"Fall 2015\"}]}";

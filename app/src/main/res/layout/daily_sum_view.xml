@@ -75,6 +75,12 @@
                 android:background="#FFFFFF" >
             </ListView>
 
+            <TextView
+                android:id="@+id/bottomText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="hello"/>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

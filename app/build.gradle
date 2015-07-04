@@ -17,6 +17,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions{
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
 }
 
 dependencies {
@@ -25,5 +32,6 @@ dependencies {
     compile 'com.google.guava:guava:16.0.1'
     compile 'com.google.maps.android:android-maps-utils:0.3+'
     compile 'com.google.code.gson:gson:2.2.4'
-
+    compile files('libs/htmlunit-2.17.jar')
+    compile files('libs/commons-lang3-3.4.jar')
 }

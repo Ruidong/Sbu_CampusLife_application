@@ -19,6 +19,7 @@
         <item >SBU DailyLife</item>
         <item >SBU Events</item>
         <item >Chat Platform</item>
+        <item>Login Out</item>
 
     </string-array>
 
@@ -29,6 +30,7 @@
         <item>@drawable/ic_people</item>
         <item>@drawable/ic_photos</item>
         <item>@drawable/ic_communities</item>
+        <item>@drawable/ic_pages</item>
 
     </array>
 

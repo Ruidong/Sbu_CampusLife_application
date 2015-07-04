@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
+
 import com.example.ruidong.sbu_application.NavigationActivity;
 import com.example.ruidong.sbu_application.R;
 import com.ruidong.specific.service.CourseManagementService;
@@ -24,9 +26,11 @@ public class CourseHistoryFragment extends Fragment {
     private HashMap<String,ArrayList<String>> courseDetailData = new HashMap<>();
     private NavigationActivity activity;
     private Button schedule;
+    private Button checkGPA;
     private Fragment historyFragment;
     private CourseScheduleFragment courseScheduleFragment;
     private Fragment resultFragment;
+    private TextView GPAText;
     public CourseHistoryFragment(){
 
     }
@@ -43,6 +47,17 @@ public class CourseHistoryFragment extends Fragment {
 
         HistoryExpandableListAdapter adapter = new HistoryExpandableListAdapter(getActivity(),courseList,courseDetailData);
         list.setAdapter(adapter);
+        GPAText = (TextView)view.findViewById(R.id.GPA_text);
+
+        checkGPA=(Button)view.findViewById(R.id.Check_GPA);
+//        checkGPA.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                System.out.println("111111111111111111111"+activity.getLoginFragment().GetGPA());
+//                GPAText.setText(activity.getLoginFragment().GetGPA());
+//            }
+//        });
+
 
         schedule.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,14 +75,20 @@ public class CourseHistoryFragment extends Fragment {
                     FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().remove(NavigationActivity.courseResultFragment);
                     tran.commit();
                 }
+                if(activity.getCourseHistoryFragment()!=null){
+                historyFragment=activity.getCourseHistoryFragment();}
+                else{
+                    historyFragment=activity.getLoginFragment().getCourseHistoryFragment();
+                }
+                System.out.println("2222222222222"+historyFragment==null);
 
-                historyFragment=activity.getCourseHistoryFragment();
-                FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().hide(historyFragment);
+                FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().remove(historyFragment);
                 tran.commit();
                 courseScheduleFragment =  new CourseScheduleFragment();
                 FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().add(R.id.Category_result_Container,courseScheduleFragment);
                 tran1.addToBackStack(null);
                 tran1.commit();
+                System.out.println("2222222222222"+courseScheduleFragment==null);
             }
         });
 

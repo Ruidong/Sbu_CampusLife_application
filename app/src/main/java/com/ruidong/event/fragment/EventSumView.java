@@ -1,11 +1,8 @@
-package com.ruidong.courseManager.fragment;
+package com.ruidong.event.fragment;
 
 /**
- * Created by Ruidong on 5/27/2015.
+ * Created by Ruidong on 7/1/2015.
  */
-
-// This is the detailed information View for a specific POI!
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,32 +22,32 @@ import android.widget.TextView;
 
 import com.example.ruidong.sbu_application.BottomButton;
 import com.example.ruidong.sbu_application.CourseManagerPOI;
+import com.example.ruidong.sbu_application.EventPOI;
 import com.example.ruidong.sbu_application.NavigationActivity;
 import com.example.ruidong.sbu_application.POI;
 import com.example.ruidong.sbu_application.R;
 import com.example.ruidong.sbu_application.SbuDailyLifePOI;
 import com.ruidong.common.parent.fragment.SumViewFragment;
-import com.ruidong.event.fragment.NestedListView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 
-public class CourseSumView extends SumViewFragment {
+public class EventSumView extends SumViewFragment {
     private TextView text1;
     private TextView text2;
     private ImageView listDetialedImage;
     private NestedListView listView;
     private LinearLayout listViewMainButton;
-    private CourseManagerPOI poi;
+    private EventPOI poi;
     private LinearLayout detailedListView;
     private String msg1,msg2;
     private Button hideListViewButton;
     private Fragment selfFragment;
     private BottomButton bottomButton;
     private ScrollView scrollView;
-    public CourseSumView(){
+    public EventSumView(){
     }
 
     @Override
@@ -83,13 +80,10 @@ public class CourseSumView extends SumViewFragment {
         });
 
         ArrayList<String> listInfo=getTargetList();
-        final StableArrayAdapter adapter = new StableArrayAdapter(getActivity(),
-                android.R.layout.simple_list_item_1, listInfo);
+        EventSumViewAdapter adapter = new EventSumViewAdapter(getActivity(),listInfo);
         listView.setAdapter(adapter);
-
 //        setListViewHeight(listView);
         scrollView.scrollTo(0, scrollView.getBottom());
-
         return view;
     }
 
@@ -113,7 +107,7 @@ public class CourseSumView extends SumViewFragment {
 
     @Override
     public void setPOI(POI currentPOI){
-        this.poi=(CourseManagerPOI)currentPOI;
+        this.poi=(EventPOI)currentPOI;
     }
 
     public void setMsg(String str1,String str2){
@@ -129,8 +123,8 @@ public class CourseSumView extends SumViewFragment {
 
     private ArrayList<String> getTargetList(){
 
-        String[] values = new String[] {"CourseNumber:  "+poi.getCourseNumber(),"CourseName:  "+poi.getCourseName(),
-                "CourseTime:  "+poi.getCourseTime(),"Course location:  "+poi.getCourseLocation(),"CourseInstructor:  "+poi.getCourseInstructor()};
+        String[] values = new String[] {"Event Name:  "+poi.getEventName(),"Event Time:  "+poi.getEventTime(),
+                "Event Location:  "+poi.getEventLocation(),"Event Contact Email:  "+poi.getEventContactEmail(), "Event Description:  "+poi.getEventDescription()};
 
         final ArrayList<String> list = new ArrayList<String>();
         for (int i = 0; i < values.length; ++i) {
@@ -140,28 +134,4 @@ public class CourseSumView extends SumViewFragment {
         return list;
     }
 
-
-    private  class StableArrayAdapter extends ArrayAdapter<String> {
-
-        HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
-
-        public StableArrayAdapter(Context context, int textViewResourceId,
-                                  List<String> objects) {
-            super(context, textViewResourceId, objects);
-            for (int i = 0; i < objects.size(); ++i) {
-                mIdMap.put(objects.get(i), i);
-            }
-        }
-
-        @Override
-        public long getItemId(int position) {
-            String item = getItem(position);
-            return mIdMap.get(item);
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
-    }
 }

@@ -119,7 +119,6 @@
         android:id="@+id/CourseHistory_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-
     </FrameLayout>
     <ListView
         android:id="@+id/list_slidermenu"

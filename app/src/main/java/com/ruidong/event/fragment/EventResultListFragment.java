@@ -1,4 +1,4 @@
-package com.ruidong.courseManager.fragment;
+package com.ruidong.event.fragment;
 
 /**
  * Created by Ruidong on 5/27/2015.
@@ -23,10 +23,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.example.ruidong.sbu_application.CourseManagerPOI;
+import com.example.ruidong.sbu_application.EventPOI;
 import com.example.ruidong.sbu_application.NavigationActivity;
 import com.example.ruidong.sbu_application.POI;
 import com.example.ruidong.sbu_application.R;
 import com.google.android.gms.maps.model.Marker;
+import com.ruidong.courseManager.fragment.CourseResultListAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,13 +36,12 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CourseResultListFragment extends Fragment{
+public class EventResultListFragment extends Fragment{
     private NavigationActivity activity ;
     private ListView list;
-    private CourseResultListFragment selfFrag;
-    private ArrayList<CourseManagerPOI> PoiList = new ArrayList<CourseManagerPOI>();
-    private ArrayList<CourseManagerPOI> restoreList;
-    public CourseResultListFragment(){
+    private ArrayList<EventPOI> PoiList = new ArrayList<EventPOI>();
+    private ArrayList<EventPOI> restoreList;
+    public EventResultListFragment(){
 
     }
 
@@ -53,10 +54,10 @@ public class CourseResultListFragment extends Fragment{
         list = (ListView) view.findViewById(R.id.listview);
         restoreList=removeDuplicateWithOrder(PoiList);
         System.out.print("restoreList Size = " + restoreList.size());
-        final CourseResultListAdapter adapter = new CourseResultListAdapter(getActivity(),
+        EventResultListAdapter adapter = new EventResultListAdapter(getActivity(),
                 restoreList);
-        Collections.sort(restoreList, new Comparator<CourseManagerPOI>() {
-            public int compare(CourseManagerPOI Poi1, CourseManagerPOI Poi2) {
+        Collections.sort(restoreList, new Comparator<EventPOI>() {
+            public int compare(EventPOI Poi1, EventPOI Poi2) {
                 return Poi1.getPoiLabel().compareToIgnoreCase(Poi2.getPoiLabel());
             }
         });
@@ -68,12 +69,10 @@ public class CourseResultListFragment extends Fragment{
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                selfFrag = (CourseResultListFragment) NavigationActivity.courseResultFragment;
-                FragmentTransaction tran = getFragmentManager().beginTransaction().remove(selfFrag);
-                tran.commit();
 
-                if(activity.getCourseClusterResultFragment()!=null) {
-                    CourseResultListFragment clusterFrag = activity.getCourseClusterResultFragment();
+
+                if(activity.getEventClusterResultFragment()!=null) {
+                    EventResultListFragment clusterFrag = activity.getEventClusterResultFragment();
                     FragmentTransaction tran2 = getFragmentManager().beginTransaction().remove(clusterFrag);
                     tran2.commit();
                 }
@@ -95,15 +94,16 @@ public class CourseResultListFragment extends Fragment{
         return view;
     }
 
-    public void setPoiList(ArrayList<CourseManagerPOI> poiList){
+    public void setPoiList(ArrayList<EventPOI> poiList){
         this.PoiList = poiList;
     }
+
     public  void setTargetList(ArrayList<POI> resultPoiList){
 
         for(POI PoiElement : resultPoiList)
         {
-            CourseManagerPOI CMPoi = (CourseManagerPOI)PoiElement;
-            PoiList.add(CMPoi);
+            EventPOI eventPOI = (EventPOI)PoiElement;
+            PoiList.add(eventPOI);
         }
     }
     public ListView getListView(){
@@ -113,10 +113,10 @@ public class CourseResultListFragment extends Fragment{
         PoiList.clear();
     }
 
-    private ArrayList<CourseManagerPOI> removeDuplicateWithOrder(ArrayList<CourseManagerPOI> list) {
-        Set<CourseManagerPOI> set = new HashSet<>(list.size());
+    private ArrayList<EventPOI> removeDuplicateWithOrder(ArrayList<EventPOI> list) {
+        Set<EventPOI> set = new HashSet<>(list.size());
         set.addAll(list);
-        ArrayList<CourseManagerPOI> newList = new ArrayList<>(set.size());
+        ArrayList<EventPOI> newList = new ArrayList<>(set.size());
         newList.addAll(set);
         return newList;
     }

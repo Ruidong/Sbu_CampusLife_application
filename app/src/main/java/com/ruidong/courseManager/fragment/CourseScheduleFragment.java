@@ -39,6 +39,7 @@ public class CourseScheduleFragment extends Fragment {
     public  ArrayList<POI> resultPoiList = new ArrayList<>();
     private Button showMarker;
     private boolean showMarkerFlag;
+    private CourseHistoryFragment historyFragment;
     public CourseScheduleFragment(){
 
     }
@@ -58,8 +59,13 @@ public class CourseScheduleFragment extends Fragment {
         history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CourseHistoryFragment historyFragment = activity.getCourseHistoryFragment();
-                FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().show(historyFragment);
+                if(activity.getCourseHistoryFragment() !=null){
+                    historyFragment = activity.getCourseHistoryFragment();
+                }
+                else {
+                    historyFragment = activity.getLoginFragment().getCourseHistoryFragment();
+                }
+                FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().add(R.id.CourseHistory_container, historyFragment);
                 tran.addToBackStack(null);
                 tran.commit();
                 courseScheduleFragment = historyFragment.getCourseScheduleFragment();
@@ -97,10 +103,9 @@ public class CourseScheduleFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 showMarkerFlag =true;
-                activity.setDailyFlag(false);
-                activity.setCourseFlag(true);
+                activity.setServiceNumber(1);
                 NavigationActivity.myMarkerList = resultPoiList;
-                activity.setBottomButtonFragmentList(resultPoiList);
+                activity.setBottomButtonFragmentList(resultPoiList,1);
                 activity.getShowListButton().setVisibility(View.INVISIBLE);
                 activity.setUpCluster(resultPoiList);
                 resultPoiList.clear();
@@ -114,10 +119,6 @@ public class CourseScheduleFragment extends Fragment {
 
 
     public  void setTargetList(ArrayList<POI> courseScheduleList){
-        System.out.println("courseScheduleList Size: "+courseScheduleList.size());
-        System.out.println("resultPoiList Size :" + resultPoiList.size());
-
-
         resultPoiList.addAll(removeDuplicateWithOrder(courseScheduleList));
         weekList.add("Monday");
         weekList.add("Tuesday");

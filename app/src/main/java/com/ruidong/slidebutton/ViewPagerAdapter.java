@@ -21,15 +21,11 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter{
     public ArrayList<BottomButton> bottomButtonList ;
 
     public ViewPagerAdapter(FragmentManager fm, ArrayList<BottomButton> fragments){
+
         super(fm);
         this.bottomButtonList=fragments;
     }
 
-
-    public ViewPagerAdapter(FragmentManager fm) {
-        super(fm);
-        // TODO Auto-generated constructor stub
-    }
 
     @Override
     public Fragment getItem(int position) {
