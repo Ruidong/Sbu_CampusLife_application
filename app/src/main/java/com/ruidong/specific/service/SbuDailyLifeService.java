@@ -71,6 +71,10 @@ public class SbuDailyLifeService implements OncampusAppService {
         return dailyMap.containsKey(str);
     }
 
+    public void setDailyMap(){
+        dailyMap.put("food",new SbuDailyLifePOI(1,"food","Salad","Wang Center","7:00 am to 10:00 pm", "631-681-8857",new LatLng(40.914833, -73.127761),"haha"));
+        dailyMap.put("food",new SbuDailyLifePOI(1,"food","Soup","Wang Center","7:00 am to 10:00 pm", "631-681-8857",new LatLng(40.912692, -73.126945),"hahaha"));
+    }
 
     public void storeData(JSONObject json) throws JSONException{
 

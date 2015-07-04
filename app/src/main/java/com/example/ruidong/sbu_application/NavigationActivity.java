@@ -249,7 +249,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                 }
             });
 
-        dailyService.dailyMap.clear();
+        dailyService.setDailyMap();
         courseService.setCourseMap();
         eventService.setEventMap();
 //        new GetPOIItem().execute(new ApiConnector());
