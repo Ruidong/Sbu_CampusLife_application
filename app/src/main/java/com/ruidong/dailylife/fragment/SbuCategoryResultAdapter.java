@@ -13,14 +13,13 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.ruidong.sbu_application.R;
+import com.example.ruidong.sbu_application.SbuDailyLifePOI;
 
 
 public class SbuCategoryResultAdapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<String> lableList;
-    private ArrayList<String> locationList;
-    private ArrayList<String> timeList;
+    private ArrayList<SbuDailyLifePOI> POiList;
     private LayoutInflater listContainer;
 
 
@@ -30,13 +29,11 @@ public class SbuCategoryResultAdapter extends BaseAdapter {
         public TextView time;
     }
 
-    public SbuCategoryResultAdapter(Context context, ArrayList<String> lableList,ArrayList<String> locationList,ArrayList<String> timeList){
+    public SbuCategoryResultAdapter(Context context, ArrayList<SbuDailyLifePOI> POiList){
 
         this.context=context;
         listContainer = LayoutInflater.from(context);
-        this.lableList=lableList;
-        this.locationList=locationList;
-        this.timeList=timeList;
+        this.POiList=POiList;
 
 
     }
@@ -45,7 +42,7 @@ public class SbuCategoryResultAdapter extends BaseAdapter {
     @Override
     public int getCount() {
 
-        return timeList.size();
+        return POiList.size();
     }
 
     @Override
@@ -60,9 +57,6 @@ public class SbuCategoryResultAdapter extends BaseAdapter {
         return 0;
     }
 
-    public String getTitle(int checkedID){
-        return lableList.get(checkedID);
-    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -77,9 +71,9 @@ public class SbuCategoryResultAdapter extends BaseAdapter {
             listItemView.title=(TextView)convertView.findViewById(R.id.lableText);
             listItemView.location=(TextView)convertView.findViewById(R.id.locationText);
             listItemView.time=(TextView)convertView.findViewById(R.id.TimeText);
-            listItemView.title.setText((String) lableList.get(position));
-            listItemView.location.setText((String) locationList.get(position));
-            listItemView.time.setText((String) timeList.get(position));
+            listItemView.title.setText((String) POiList.get(position).getPoiLabel());
+            listItemView.location.setText((String) POiList.get(position).getPoiLocation());
+            listItemView.time.setText((String) POiList.get(position).getPoiTime());
         }
         return convertView;
     }

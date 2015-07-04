@@ -3,6 +3,8 @@ package com.ruidong.dailylife.fragment;
 /**
  * Created by Ruidong on 5/27/2015.
  */
+
+// This is the detailed information View for a specific POI!
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +34,7 @@ import com.example.ruidong.sbu_application.BottomButton;
 import com.example.ruidong.sbu_application.NavigationActivity;
 import com.example.ruidong.sbu_application.POI;
 import com.example.ruidong.sbu_application.R;
+import com.example.ruidong.sbu_application.SbuDailyLifePOI;
 import com.ruidong.common.parent.fragment.SumViewFragment;
 
 
@@ -41,7 +44,7 @@ public class SbuDailySumView extends SumViewFragment {
     private ImageView listDetialedImage;
     private ListView listView;
     private LinearLayout listViewMainButton;
-    private POI poi=new POI();
+    private SbuDailyLifePOI poi;
     private LinearLayout detailedListView;
     private String msg1,msg2;
     private Button hideListViewButton;
@@ -74,7 +77,7 @@ public class SbuDailySumView extends SumViewFragment {
             public void onClick(View v) {
 
                 bottomButton= NavigationActivity.bottomFrag;
-                selfFragment= bottomButton.dailySumViewBot;
+                selfFragment= bottomButton.SumViewBot;
                 FragmentTransaction tran=getFragmentManager().beginTransaction().remove(selfFragment);
                 tran.commit();
 
@@ -112,7 +115,7 @@ public class SbuDailySumView extends SumViewFragment {
 
     @Override
     public void setPOI(POI currentPOI){
-        this.poi=currentPOI;
+        this.poi=(SbuDailyLifePOI)currentPOI;
     }
 
     public void setMsg(String str1,String str2){
@@ -129,7 +132,7 @@ public class SbuDailySumView extends SumViewFragment {
     private ArrayList<String> getTargetList(){
 
         String[] values = new String[] {"Name:  "+poi.getPoiLabel(),"Location:  "+poi.getPoiLocation(),
-                "Available Time:  "+poi.getPoiFundDetail(),"Contact Phone:  "+poi.getmPhone()};
+                "Available Time:  "+poi.getPoiTime(),"Contact Phone:  "+poi.getPoiPhone(),"Description:  "+poi.getPoiDescription()};
 
         final ArrayList<String> list = new ArrayList<String>();
         for (int i = 0; i < values.length; ++i) {
