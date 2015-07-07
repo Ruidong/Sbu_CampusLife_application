@@ -254,6 +254,18 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         eventService.setEventMap();
 //        new GetPOIItem().execute(new ApiConnector());
 //        new GetAliase().execute(new GetAliaseConnector());
+        ArrayList<String> hintList1 = new ArrayList<>();
+        hintList1.add("food");
+        hintList1.add("fastfood");
+        ArrayList<String> hintList2 = new ArrayList<>();
+        hintList2.add("coffee");
+        write(this, hintList1,"TestHintlist1.txt");
+        write(this,hintList2,"TestHintlist2.txt");
+
+
+
+
+
         try {
             courseService.obtainData();
         } catch (JSONException e) {

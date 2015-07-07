@@ -45,11 +45,12 @@ public class InputSearchActivity extends FragmentActivity {
         clear = (Button)findViewById(R.id.clear);
         layout=(RelativeLayout)findViewById(R.id.layout_container);
         acTextView = (AutoCompleteTextView)findViewById(R.id.userInput);
-        hintList1 = NavigationActivity.read(this,"Hintlist1.txt");
-        hintList2 = NavigationActivity.read(this,"Hintlist2.txt");
+        hintList1 = NavigationActivity.read(this,"TestHintlist1.txt");
+        hintList2 = NavigationActivity.read(this,"TestHintlist2.txt");
         for(String str : hintList2){
             hintList1.add(str);
         }
+        System.out.println(hintList1);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.hint_list_adapter,R.id.text,hintList1);
         acTextView.setThreshold(1);
         acTextView.setAdapter(adapter);
