@@ -61,7 +61,7 @@
         </RelativeLayout>
     </RelativeLayout>
 
-    <com.ruidong.event.fragment.GridViewScrollable
+    <com.example.ruidong.sbu_application.event.service.GridViewScrollable
         android:id="@+id/gridview"
         android:layout_below="@+id/header"
         android:layout_width="fill_parent"
@@ -72,11 +72,11 @@
         android:numColumns="7"
         android:stretchMode="columnWidth" />
 
-         <com.ruidong.event.fragment.NestedListView
+         <com.example.ruidong.sbu_application.event.service.NestedListView
              android:id="@+id/listview"
              android:layout_width="fill_parent"
              android:layout_height="wrap_content"
-             android:layout_below="@+id/gridview"></com.ruidong.event.fragment.NestedListView>
+             android:layout_below="@+id/gridview"></com.example.ruidong.sbu_application.event.service.NestedListView>
          <TextView
              android:id="@+id/bottomText"
              android:layout_width="wrap_content"
