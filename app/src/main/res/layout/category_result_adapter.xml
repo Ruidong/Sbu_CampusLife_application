@@ -10,28 +10,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginLeft="10dp"
+        android:layout_gravity="center_horizontal"
         android:text="textView1"
-        android:textSize="18sp"/>
+        android:textSize="22sp"/>
 
     <TextView
         android:id="@+id/locationText"
         android:layout_width="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
+        android:layout_gravity="center_horizontal"
         android:layout_height="wrap_content"
         android:text="textView2"
-        android:textSize="18sp"/>
+        android:textSize="16sp"/>
 
-    <TextView
-        android:id="@+id/TimeText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="8dp"
-        android:text="TextView"
-        android:textSize="18sp"/>
 
 </LinearLayout>

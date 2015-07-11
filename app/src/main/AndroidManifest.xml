@@ -36,17 +36,13 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.ruidong.ruidong.sbu_application.NavigationActivity"
+            android:name="com.example.ruidong.sbu_application.framework.NavigationActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity android:name="com.example.ruidong.ruidong.sbu_application.InputSearchActivity">
-
         </activity>
 
         <meta-data

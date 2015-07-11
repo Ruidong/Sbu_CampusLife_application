@@ -24,8 +24,7 @@ public class SbuCategoryResultAdapter extends BaseAdapter {
 
     public final class ListItemView{
         public TextView title;
-        public TextView location;
-        public TextView time;
+        public TextView infomation;
     }
 
     public SbuCategoryResultAdapter(Context context, ArrayList<SbuDailyLifePOI> POiList){
@@ -36,7 +35,6 @@ public class SbuCategoryResultAdapter extends BaseAdapter {
 
 
     }
-
 
     @Override
     public int getCount() {
@@ -68,11 +66,9 @@ public class SbuCategoryResultAdapter extends BaseAdapter {
             listItemView = new ListItemView();
             convertView = listContainer.inflate(R.layout.category_result_adapter, null);
             listItemView.title=(TextView)convertView.findViewById(R.id.lableText);
-            listItemView.location=(TextView)convertView.findViewById(R.id.locationText);
-            listItemView.time=(TextView)convertView.findViewById(R.id.TimeText);
+            listItemView.infomation=(TextView)convertView.findViewById(R.id.locationText);
             listItemView.title.setText((String) POiList.get(position).getPoiLabel());
-            listItemView.location.setText((String) POiList.get(position).getPoiLocation());
-            listItemView.time.setText((String) POiList.get(position).getPoiTime());
+            listItemView.infomation.setText((String) POiList.get(position).getPoiLocation()+" , "+POiList.get(position).getPoiTime());
         }
         return convertView;
     }

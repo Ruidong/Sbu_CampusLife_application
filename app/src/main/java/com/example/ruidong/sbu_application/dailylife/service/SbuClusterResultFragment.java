@@ -12,42 +12,37 @@ package com.example.ruidong.sbu_application.dailylife.service;
 // Second is SetTargetList method, which will set the content of this ListView, based on the
 // POI collection got from server database.
 
-import java.util.ArrayList;
-import java.util.Collections;
-        import java.util.Comparator;
-        import java.util.HashSet;
-        import java.util.Set;
-
-
-        import com.example.ruidong.sbu_application.framework.NavigationActivity;
-        import com.example.ruidong.sbu_application.framework.POI;
-        import com.example.ruidong.sbu_application.R;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.Marker;
-
-
-
-        import android.os.Bundle;
-        import android.support.v4.app.Fragment;
-        import android.support.v4.app.FragmentTransaction;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.AdapterView;
-        import android.widget.AdapterView.OnItemClickListener;
-
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 
-public class SbuCategoryResultFragment extends Fragment{
+import com.example.ruidong.sbu_application.R;
+import com.example.ruidong.sbu_application.framework.NavigationActivity;
+import com.example.ruidong.sbu_application.framework.POI;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.Marker;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+
+public class SbuClusterResultFragment extends Fragment{
     private NavigationActivity activity ;
     private ListView list;
-    private SbuCategoryResultFragment selfFrag;
+    private SbuClusterResultFragment selfFrag;
     private ArrayList<SbuDailyLifePOI> PoiList = new ArrayList<SbuDailyLifePOI>();
     private ArrayList<SbuDailyLifePOI> restoreList;
     private Button button;
-    public SbuCategoryResultFragment(){
+    public SbuClusterResultFragment(){
 
     }
 
@@ -75,7 +70,7 @@ public class SbuCategoryResultFragment extends Fragment{
             @Override
             public void onClick(View v) {
 
-               activity.removeCategoryResultFragment();
+               activity.removeClusterResult();
             }
         });
 
@@ -88,7 +83,7 @@ public class SbuCategoryResultFragment extends Fragment{
                                     int position, long id) {
 
                 POI currentPOI = restoreList.get(position);
-                activity.responseOfResultListItemClick(currentPOI);
+                activity.responseOfClusterResultListItemClick(currentPOI);
             }
         });
 

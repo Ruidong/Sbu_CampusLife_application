@@ -11,12 +11,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -40,6 +45,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
@@ -49,9 +56,9 @@ import android.view.View;
 
 import android.widget.AdapterView;
 
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -61,6 +68,7 @@ import android.widget.Toast;
 import com.example.ruidong.sbu_application.R;
 import com.example.ruidong.sbu_application.courseManager.service.CourseManagerPOI;
 import com.example.ruidong.sbu_application.courseManager.service.LoginFragment;
+import com.example.ruidong.sbu_application.dailylife.service.SbuClusterResultFragment;
 import com.example.ruidong.sbu_application.dailylife.service.SbuDailyLifePOI;
 import com.example.ruidong.sbu_application.event.service.EventPOI;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -74,6 +82,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
@@ -107,15 +117,15 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
     public static GoogleMap map;
     private SupportMapFragment fragment;
     private LatLngBounds latlngBounds;
-    private ImageButton navigationImageButton;
-    private ImageButton searchImageButton;
+    private Button navigationButton;
+    private Button searchButton;
     private Polyline newPolyline;
     private boolean isTravelingToDestination = false;
     private int width, height;
     private LatLng usercurrentlocation;
     private LocationManager locationManager;
     private LocationListener locationListener = new locationlistener();
-    public static EditText editText ;
+    public static AutoCompleteTextView editText ;
     private static String location ;
     private static double destinationLat = 40.915962;
     private static double destinationLng = -73.126264;
@@ -172,7 +182,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
     private POIRenderer poiRenderer;
     private boolean clusterFlag = false;
     private boolean clusterItemFlag = false;
-    private SbuCategoryResultFragment dailyClusterResultFragment;
+    private SbuClusterResultFragment dailyClusterResultFragment;
     private CourseResultListFragment courseClusterResultFragment;
     private EventResultListFragment eventResultListFragment;
     private SbuDailyLifeCategoryFragment dailyLifeCategoryFragment;
@@ -189,16 +199,14 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
     private LoginFragment loginFragment;
     private SharedPreferences.Editor editor;
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-           if(resultCode == RESULT_OK){
-               Bundle bundle = data.getExtras();
-               String str = bundle.getString("userInput");
-               editText.setText(str.toLowerCase());
-           }
-    }
-
+    private ArrayList<String> hintListRead1;
+    private ArrayList<String> hintListRead2;
+    private SharedPreferences historyPreference;
+    private ArrayList<String> historyList = new ArrayList<String>();
+    private LinearLayout showClusterListButton;
+    private TextView showClusterListButtonText1;
+    private TextView showClusterListButtonText2;
+    private ArrayList<String> finalHintList = new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -231,25 +239,19 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
 
         //Main Interface View Initialize
-        navigationImageButton = (ImageButton) findViewById(R.id.bNavigation);
-        searchImageButton = (ImageButton) findViewById(R.id.bSearch);
-        editText = (EditText) findViewById(R.id.et_location);
+        navigationButton = (Button) findViewById(R.id.bNavigation);
+        searchButton = (Button) findViewById(R.id.bSearch);
+        editText = (AutoCompleteTextView) findViewById(R.id.et_location);
+        showClusterListButton=(LinearLayout) findViewById(R.id.showClusterListButton);
+        showClusterListButtonText1=(TextView) findViewById(R.id.showClusterListButtontext1);
+        showClusterListButtonText2=(TextView) findViewById(R.id.showClusterListButtontext2);
+
         showListButton=(Button)findViewById(R.id.showListButton);
         showListButton.setOnClickListener(new showListButtonOnClickListener(this) {
 
         });
         showListButton.setVisibility(View.INVISIBLE);
-
-		    editText.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent();
-                    intent.setClass(NavigationActivity.this, InputSearchActivity.class);
-                    startActivityForResult(intent, 0);
-                }
-            });
-
+        dailyService.dailyMap.clear();
         dailyService.setDailyMap();
         courseService.setCourseMap();
         eventService.setEventMap();
@@ -260,12 +262,8 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         hintList1.add("fastfood");
         ArrayList<String> hintList2 = new ArrayList<>();
         hintList2.add("coffee");
-        write(this, hintList1,"TestHintlist1.txt");
-        write(this,hintList2,"TestHintlist2.txt");
-
-
-
-
+        write(this, hintList1, "TestHintlist1.txt");
+        write(this, hintList2, "TestHintlist2.txt");
 
         try {
             courseService.obtainData();
@@ -273,9 +271,50 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
             e.printStackTrace();
         }
 
+        hintListRead1 = NavigationActivity.read(this,"TestHintlist1.txt");
+        hintListRead2 = NavigationActivity.read(this,"TestHintlist2.txt");
+
+        for(String str : hintListRead2){
+            hintListRead1.add(str);
+        }
+
+        HashSet<String> set = new HashSet<>();
+        set.addAll(hintListRead1);
+        ArrayList<String> historyList = loadHistroy();
+        for(String str: historyList){
+            set.add(str);
+        }
+        finalHintList.addAll(set);
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.hint_list_adapter,R.id.text,finalHintList);
+        editText.setThreshold(1);
+        editText.setTextColor(Color.BLACK);
+        editText.setAdapter(adapter);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
+
+
         SharedPreferences preferences = getSharedPreferences("UserInfomation", Context.MODE_PRIVATE);
         editor = preferences.edit();
-        searchImageButton.setOnClickListener(new searchOnclickListener(dailyService) {
+        searchButton.setOnClickListener(new searchOnclickListener(dailyService) {
 
         });
 
@@ -288,47 +327,15 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                 layoutPager.setVisibility(View.INVISIBLE);
 
 
-                if (showResultListFlag == true || serviceNumber==2) {
-                    switch (serviceNumber) {
-                        case 0: {
-                            FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(dailyResultFragment);
-                            removeTran.commit();
-                            break;
-                        }
-                        case 1: {
-                            FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(courseResultFragment);
-                            removeTran.commit();
-                            break;
-                        }
-                        default:break;
-                    }
+                if (showResultListFlag == true || serviceNumber == 2) {
                     showListButton.setVisibility(View.VISIBLE);
+                    showClusterListButton.setVisibility(View.INVISIBLE);
                 }
 
-                if (clusterResultFragmentFlag == true) {
-                    switch (serviceNumber) {
-                        case 0: {
-                            FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(dailyClusterResultFragment);
-                            removeTran.commit();
-                            break;
-                        }
-                        case 1: {
-                            FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(courseClusterResultFragment);
-                            removeTran.commit();
-                            break;
-                        }
-                        case 2:{
-                            FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(eventResultListFragment);
-                            removeTran.commit();
-                            break;
-                        }
-                        default:break;
-                    }
-                }
-                clusterResultFragmentFlag = false;
             }
 
         });
+
 
         map.setInfoWindowAdapter(new CustomAdapterForCluster());
 
@@ -373,7 +380,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
 
         // Show the navigation route.
-        navigationImageButton.setOnClickListener(new View.OnClickListener() {
+        navigationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -414,15 +421,39 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         return list.get(1)[0];
     }
 
+    public void saveHistory(String  input){
+        historyPreference = getSharedPreferences("historyPreference", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = historyPreference.edit();
+        if(historyList == null){
+            historyList = new ArrayList<String>();
+        }
+        historyList.add(input);
+
+        HashSet<String> set = new HashSet<>();
+        set.addAll(historyList);
+        editor.putStringSet("historyset",set);
+        editor.commit();
+
+    }
+
+    public ArrayList<String> loadHistroy(){
+
+        SharedPreferences preference = getSharedPreferences("historyPreference", Context.MODE_PRIVATE);
+        HashSet<String> set = (HashSet)preference.getStringSet("historyset",null);
+        ArrayList<String> inputList = new ArrayList<>();
+        if(set != null)
+        {
+        inputList.addAll(set);
+        }
+        return inputList;
+    }
+
+
     public CourseManagementService getCourseService(){
         return this.courseService;
     }
     public EventService getEventService(){
         return  this.eventService;
-    }
-
-    public LinearLayout getLayoutPager(){
-        return this.layoutPager;
     }
 
     private class showListButtonOnClickListener implements View.OnClickListener{
@@ -462,6 +493,109 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
     public Button getShowListButton(){
         return  this.showListButton;
     }
+    public void removeCategoryResultFragment(){
+            switch (serviceNumber) {
+                case 0: {
+                    FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(dailyResultFragment);
+                    removeTran.commit();
+                    break;
+                }
+                case 1: {
+                    FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(courseResultFragment);
+                    removeTran.commit();
+                    break;
+                }
+                default:
+                    break;
+            }
+            showListButton.setVisibility(View.VISIBLE);
+    }
+
+
+    public void removeClusterResult(){
+        switch (serviceNumber) {
+            case 0: {
+                FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(dailyClusterResultFragment);
+                removeTran.commit();
+                break;
+            }
+            case 1: {
+                FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(courseClusterResultFragment);
+                removeTran.commit();
+                break;
+            }
+            case 2: {
+                FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(eventResultListFragment);
+                removeTran.commit();
+                break;
+            }
+            default:
+                break;
+
+        }
+        showClusterListButton.setVisibility(View.VISIBLE);
+        clusterResultFragmentFlag = false;
+    }
+
+    public void responseOfResultListItemClick(POI currentPOI){
+        switch (serviceNumber){
+            case 0: {
+                FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(dailyResultFragment);
+                removeTran.commit();
+                Marker marker = mMarkersHashMap2.get(currentPOI);
+                setClickedClusterItem(currentPOI);
+                if (marker != null) {
+
+                    marker.showInfoWindow();
+                }
+                map.animateCamera(CameraUpdateFactory.newLatLng(currentPOI.getPosition()));
+                setBottomButtonFragment(currentPOI);
+                showListButton.setVisibility(View.INVISIBLE);
+                setClusterItemFragToFalse();
+                setClusterResultFragmentFlagToFalse();;
+                break;
+            }
+            case 1: {
+                FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(courseResultFragment);
+                removeTran.commit();
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+    public void responseOfClusterResultListItemClick(POI currentPOI){
+        switch (serviceNumber){
+            case 0: {
+                FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(dailyClusterResultFragment);
+                removeTran.commit();
+                Marker marker = mMarkersHashMap2.get(currentPOI);
+                setClickedClusterItem(currentPOI);
+                if (marker != null) {
+
+                    marker.showInfoWindow();
+                }
+                map.animateCamera(CameraUpdateFactory.newLatLng(currentPOI.getPosition()));
+                setBottomButtonFragment(currentPOI);
+                showClusterListButton.setVisibility(View.INVISIBLE);
+                setClusterItemFragToFalse();
+                setClusterResultFragmentFlagToFalse();;
+                break;
+            }
+            case 1: {
+                FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(courseResultFragment);
+                removeTran.commit();
+                break;
+            }
+            default:
+                break;
+        }
+    }
+
+
+
+
 
     private class searchOnclickListener implements View.OnClickListener{
         private SbuDailyLifeService   dailyService;
@@ -474,6 +608,24 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         @Override
         public void onClick(View v) {
             location = editText.getText().toString();
+
+            ArrayList<String> historyList1 = loadHistroy();
+            if(!historyList1.contains(location)){
+                saveHistory(location);
+            }
+
+            if(!finalHintList.contains(location)){
+                finalHintList.add(location);
+            }
+
+            System.out.println(hintListRead1);
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplication(),R.layout.hint_list_adapter,R.id.text,finalHintList);
+            editText.setThreshold(1);
+            editText.setTextColor(Color.BLACK);
+            editText.setAdapter(adapter);
+
+
             // Determine which service's poi is relative with user input.
                map.clear();
                if(mClusterManager!=null){
@@ -500,11 +652,8 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                           showResultListFlag = true;
                           dailyResultFragment = new SbuCategoryResultFragment();
                           ((SbuCategoryResultFragment) dailyResultFragment).setTargetList(myMarkerList);
-                          FragmentTransaction resultTran = getSupportFragmentManager().beginTransaction()
-                                  .add(R.id.Category_result_Container, dailyResultFragment);
-                          resultTran.addToBackStack(null);
-                          resultTran.commit();
-                          showListButton.setVisibility(View.INVISIBLE);
+                          showListButton.setVisibility(View.VISIBLE);
+                          moveCamera(myMarkerList);
                       }
 
                       if (myMarkerList.size() == 1) {
@@ -524,22 +673,19 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                       if (myMarkerList.size() > 1) {
                           showResultListFlag = true;
                           courseResultFragment = new CourseResultListFragment();
-                          ((CourseResultListFragment) courseResultFragment).setTargetList(myMarkerList);
-                          FragmentTransaction resultTran = getSupportFragmentManager().beginTransaction()
-                                  .add(R.id.Category_result_Container, courseResultFragment);
-                          resultTran.addToBackStack(null);
-                          resultTran.commit();
+                          showListButton.setVisibility(View.VISIBLE);
+                          moveCamera(myMarkerList);
                       }
 
                       if (myMarkerList.size() == 1) {
                           for (POI currentPOI : myMarkerList) {
                               currentMapCenter = currentPOI.getPosition();
                               setBottomButtonFragment(currentPOI);
+                              showListButton.setVisibility(View.INVISIBLE);
                           }
 
                           map.moveCamera(CameraUpdateFactory.newLatLngZoom(currentMapCenter, 14));
                       }
-                      showListButton.setVisibility(View.INVISIBLE);
                   }
 
                   else {
@@ -560,7 +706,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
     public void setServiceNumber(int number ){
         this.serviceNumber = number;
         if(number ==0 || number ==1){
-            showListButton.setText("Result List");
+            showListButton.setText("Review Search Result");
         }
         else if(number == 2){
             showListButton.setText("Review Calendar");
@@ -685,7 +831,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                      switch (serviceNumber) {
                          case 0: {
 
-                             dailyClusterResultFragment = new SbuCategoryResultFragment();
+                             dailyClusterResultFragment = new SbuClusterResultFragment();
                              ArrayList<SbuDailyLifePOI> list = new ArrayList<>();
                              for (POI poi : cluster.getItems()) {
                                  SbuDailyLifePOI SDLPoi = (SbuDailyLifePOI) poi;
@@ -798,28 +944,30 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                   layoutPager.setVisibility(View.INVISIBLE);
                   destinationLat = cluster.getPosition().latitude;
                   destinationLng = cluster.getPosition().longitude;
-                  if (showResultListFlag == true) {
-                      switch (serviceNumber) {
-                          case 0: {
-                              FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(dailyResultFragment);
-                              removeTran.commit();
-                              showListButton.setVisibility(View.VISIBLE);
-                              break;
-                          }
-                          case 1: {
-                              FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(courseResultFragment);
-                              removeTran.commit();
-                              showListButton.setVisibility(View.VISIBLE);
-                              break;
-                          }
-                          default:break;
+                  showClusterListButton.setVisibility(View.VISIBLE);
+                  showClusterListButton.setOnClickListener(new ShowClusterListButtonClickListener(cluster));
+                  ArrayList<POI> clusterList = new ArrayList<POI>();
+                  clusterList.addAll(cluster.getItems());
+                  if(clusterList.size()>2){
+                      POI item1 = clusterList.get(0);
+                      POI item2 = clusterList.get(1);
+                      showClusterListButtonText1.setText("Item :" + item1.getPoiLabel()+"," + item2.getPoiLabel()+",...");
+                  }
+                  else{
+                      POI item1 = clusterList.get(0);
+                      POI item2 = clusterList.get(1);
+                      showClusterListButtonText1.setText("Item :" + item1.getPoiLabel()+"," + item2.getPoiLabel());
+                  }
+                  String location = clickedCluster.getItems().iterator().next().getPoiLocation();
+                  showClusterListButtonText2.setText(location);
+
+
+
+                  if (courseHistoryFragment != null)
+                      if (courseHistoryFragment.getCourseScheduleFragment() != null) {
+                          FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(courseHistoryFragment.getCourseScheduleFragment());
+                          removeTran1.commit();
                       }
-                  }
-                  if(courseHistoryFragment!=null)
-                  if(courseHistoryFragment.getCourseScheduleFragment()!=null){
-                      FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(courseHistoryFragment.getCourseScheduleFragment());
-                      removeTran1.commit();
-                  }
                   return false;
               }
           });
@@ -841,20 +989,23 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                                 FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(dailyResultFragment);
                                 removeTran.commit();
                                 break;
-                            }case 1: {
+                            }
+                            case 1: {
                                 FragmentTransaction removeTran = getSupportFragmentManager().beginTransaction().remove(courseResultFragment);
                                 removeTran.commit();
                                 break;
                             }
-                            default:break;
+                            default:
+                                break;
                         }
                         showListButton.setVisibility(View.INVISIBLE);
+                        showClusterListButton.setVisibility(View.INVISIBLE);
                     }
-                    if(courseHistoryFragment !=null)
-                    if(courseHistoryFragment.getCourseScheduleFragment()!=null){
-                        FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(courseHistoryFragment.getCourseScheduleFragment());
-                        removeTran1.commit();
-                    }
+                    if (courseHistoryFragment != null)
+                        if (courseHistoryFragment.getCourseScheduleFragment() != null) {
+                            FragmentTransaction removeTran1 = getSupportFragmentManager().beginTransaction().remove(courseHistoryFragment.getCourseScheduleFragment());
+                            removeTran1.commit();
+                        }
                     return false;
                 }
             });
@@ -862,6 +1013,8 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
           mClusterManager.setOnClusterItemInfoWindowClickListener(this);
           addItems(myMarkerList);
           mClusterManager.cluster();
+
+
 
     }
 
@@ -872,6 +1025,76 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
              }
         }
      }
+
+     private void moveCamera(ArrayList<POI> myMarkerList){
+         LatLngBounds.Builder builder = new LatLngBounds.Builder();
+         for(POI poiElement : myMarkerList){
+
+             builder.include(poiElement.getPosition());
+         }
+        LatLngBounds bounds = builder.build();
+        map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 150));
+     }
+    private class ShowClusterListButtonClickListener implements View.OnClickListener{
+        private Cluster<POI> cluster;
+        ShowClusterListButtonClickListener(Cluster<POI> cluster){
+            this.cluster=cluster;
+        }
+        @Override
+        public void onClick(View v) {
+
+            switch (serviceNumber) {
+                case 0: {
+                    dailyClusterResultFragment = new SbuClusterResultFragment();
+                    ArrayList<SbuDailyLifePOI> list = new ArrayList<>();
+                    for (POI poi : cluster.getItems()) {
+                        SbuDailyLifePOI SDLPoi = (SbuDailyLifePOI) poi;
+                        list.add(SDLPoi);
+                    }
+
+                    dailyClusterResultFragment.setPoiList(list);
+                    FragmentTransaction resultTran = getSupportFragmentManager().beginTransaction()
+                            .add(R.id.Cluster_result_Container, dailyClusterResultFragment);
+                    clusterResultFragmentFlag = true;
+                    resultTran.addToBackStack(null);
+                    resultTran.commit();
+                    break;
+                }
+                case 1: {
+                    courseClusterResultFragment = new CourseResultListFragment();
+                    ArrayList<CourseManagerPOI> list = new ArrayList<>();
+                    for (POI poi : cluster.getItems()) {
+                        CourseManagerPOI CMPoi = (CourseManagerPOI) poi;
+                        list.add(CMPoi);
+                    }
+                    courseClusterResultFragment.setPoiList(list);
+                    FragmentTransaction resultTran = getSupportFragmentManager().beginTransaction()
+                            .add(R.id.Cluster_result_Container, courseClusterResultFragment);
+                    clusterResultFragmentFlag = true;
+                    resultTran.addToBackStack(null);
+                    resultTran.commit();
+                    break;
+                }
+                case 2:{
+                    eventResultListFragment = new EventResultListFragment();
+                    ArrayList<EventPOI> list = new ArrayList<>();
+                    for (POI poi : cluster.getItems()) {
+                        EventPOI eventPoi = (EventPOI) poi;
+                        list.add(eventPoi);
+                    }
+                    eventResultListFragment.setPoiList(list);
+                    FragmentTransaction resultTran = getSupportFragmentManager().beginTransaction()
+                            .add(R.id.Cluster_result_Container, eventResultListFragment);
+                    clusterResultFragmentFlag = true;
+                    resultTran.addToBackStack(null);
+                    resultTran.commit();
+                    break;
+                }
+                default:break;
+            }
+
+        }
+    }
 
 
 
@@ -894,15 +1117,15 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
         public View getInfoContents(Marker marker) {
             if(clusterFlag == true){
                 final ArrayList<POI> clusterList = new ArrayList<POI>();
-                String position = clickedCluster.getItems().iterator().next().getPoiLocation();
-                TextView clusterPosition = (TextView)myContentsView.findViewById(R.id.clusterTitle);
-                clusterPosition.setText("Position:" + position);
+                String location = clickedCluster.getItems().iterator().next().getPoiLocation();
+                TextView clusterPosition = (TextView)myContentsView.findViewById(R.id.clusterLocation);
+                clusterPosition.setText("Location:" + location);
 
                 for(POI item : clickedCluster.getItems()){
                     clusterList.add(item);
                 }
 
-                TextView clusterItemInfo = (TextView)myContentsView.findViewById(R.id.clusterItemInfo);
+                TextView clusterItemInfo = (TextView)myContentsView.findViewById(R.id.clusterTitle);
                 if(clusterList.size()>2){
                     POI item1 = clusterList.get(0);
                     POI item2 = clusterList.get(1);
@@ -919,12 +1142,12 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
             if(clusterItemFlag == true){
                 ArrayList<POI> clusterList = new ArrayList<POI>();
-                String position = clickedClusterItem.getPoiLocation();
-                TextView clusterPosition = (TextView)myContentsView.findViewById(R.id.clusterTitle);
-                clusterPosition.setText("Position:" + position);
+                String location = clickedClusterItem.getPoiLocation();
+                TextView clusterItemInfo = (TextView)myContentsView.findViewById(R.id.clusterTitle);
+                clusterItemInfo.setText("Item :" + clickedClusterItem.getPoiLabel());
                 clusterList.add(clickedClusterItem);
-                TextView clusterItemInfo = (TextView)myContentsView.findViewById(R.id.clusterItemInfo);
-                clusterItemInfo.setText("Item : "+ clickedClusterItem.getPoiLabel());
+                TextView clusterLocation = (TextView)myContentsView.findViewById(R.id.clusterLocation);
+                clusterLocation.setText("Location : "+ location);
                 InfoWindowClickFlg = false;
 
             }
@@ -937,7 +1160,7 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
 
     }
 
-    public SbuCategoryResultFragment getDailyClusterResultFragment(){
+    public SbuClusterResultFragment getDailyClusterResultFragment(){
         return this.dailyClusterResultFragment;
     }
 

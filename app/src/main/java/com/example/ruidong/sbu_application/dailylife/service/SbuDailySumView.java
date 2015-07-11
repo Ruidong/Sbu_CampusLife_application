@@ -39,7 +39,6 @@ import com.example.ruidong.sbu_application.framework.SumViewFragment;
 
 public class SbuDailySumView extends SumViewFragment {
     private TextView text1;
-    private TextView text2;
     private ImageView listDetialedImage;
     private ListView listView;
     private LinearLayout listViewMainButton;
@@ -62,7 +61,6 @@ public class SbuDailySumView extends SumViewFragment {
         detailedListView=(LinearLayout)view.findViewById(R.id.myDetailedListView);
         listViewMainButton=(LinearLayout)view.findViewById(R.id.ListViewMainButton);
         text1=(TextView)view.findViewById(R.id.textView3);
-        text2=(TextView)view.findViewById(R.id.textView4);
         listDetialedImage=(ImageView)view.findViewById(R.id.ListViewImage);
         listView=(ListView)view.findViewById(R.id.listview);
         scrollView=(ScrollView)view.findViewById(R.id.scrollView);
@@ -125,12 +123,11 @@ public class SbuDailySumView extends SumViewFragment {
 
     private void setListText(){
         text1.setText(msg1);
-        text2.setText(msg2);
     }
 
     private ArrayList<String> getTargetList(){
 
-        String[] values = new String[] {"Name:  "+poi.getPoiLabel(),"Location:  "+poi.getPoiLocation(),
+        String[] values = new String[] {"Location:  "+poi.getPoiLocation(),
                 "Available Time:  "+poi.getPoiTime(),"Contact Phone:  "+poi.getPoiPhone(),"Description:  "+poi.getPoiDescription()};
 
         final ArrayList<String> list = new ArrayList<String>();
