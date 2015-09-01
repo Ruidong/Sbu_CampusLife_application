@@ -145,12 +145,20 @@
         </FrameLayout>
 
 
+        <FrameLayout
+            android:id="@+id/CourseSchedule_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/bSearch"
+            >
+        </FrameLayout>
+
 
         <FrameLayout
             android:id="@+id/CourseHistory_container"
             android:layout_width="match_parent"
-            android:layout_below="@+id/bSearch"
-            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_height="fill_parent"
             >
         </FrameLayout>
 

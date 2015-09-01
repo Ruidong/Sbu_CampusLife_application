@@ -32,10 +32,6 @@ public class SbuDailyLifeService implements OncampusAppService {
 
     }
 
-
-
-
-
     public ArrayList<String> getNameList(String str){
         Collection<String> myNameCollection = dailyAliasMap.get(str);
         ArrayList<String> list = new ArrayList<>();
@@ -75,7 +71,6 @@ public class SbuDailyLifeService implements OncampusAppService {
         dailyMap.put("food",new SbuDailyLifePOI(1,"food","Salad","Wang Center","7:00 am to 10:00 pm", "631-681-8857",new LatLng(40.914833, -73.127761),"haha"));
         dailyMap.put("food",new SbuDailyLifePOI(1,"food","Soup","Wang Center","7:00 am to 10:00 pm", "631-681-8857",new LatLng(40.912692, -73.126945),"hahaha"));
         dailyMap.put("food",new SbuDailyLifePOI(1,"food","noodle","Union","7:00 am to 10:00 pm", "631-681-8857",new LatLng(40.917168, -73.121185),"haha"));
-
     }
 
     public void storeData(JSONObject json) throws JSONException{
@@ -83,7 +78,6 @@ public class SbuDailyLifeService implements OncampusAppService {
         POI poi = new SbuDailyLifePOI(json.getInt("POI_ID"), json.getString("POI_Category"),json.getString("POI_Name"),
                 json.getString("Location_name"),json.getString("Available_time"),
                 json.getString("Phone"),new LatLng(json.getDouble("Latitude"),json.getDouble("Longitude")),json.getString("Description"));
-
         dailyMap.put(json.getString("POI_Category").toLowerCase(), poi);
         dailyMap.put(json.getString("POI_Name").toLowerCase(),poi);
         dailyList.add(poi);

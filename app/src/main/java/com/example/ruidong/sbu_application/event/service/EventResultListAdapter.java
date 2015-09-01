@@ -33,7 +33,6 @@ public class EventResultListAdapter extends ArrayAdapter {
     public final class ListItemView{
         public TextView title;
         public TextView location;
-        public TextView time;
     }
 
     public EventResultListAdapter(Context context, ArrayList<EventPOI> PoiList){
@@ -77,14 +76,12 @@ public class EventResultListAdapter extends ArrayAdapter {
                 convertView = listContainer.inflate(R.layout.category_result_adapter, null);
                 listItemView.title = (TextView) convertView.findViewById(R.id.lableText);
                 listItemView.location = (TextView) convertView.findViewById(R.id.locationText);
-                listItemView.time = (TextView) convertView.findViewById(R.id.TimeText);
 
                 lmap.put(position,convertView);
                 convertView.setTag(listItemView);
 
                 listItemView.title.setText((String) poi.getEventName());
                 listItemView.location.setText((String) poi.getEventLocation());
-                listItemView.time.setText((String) poi.getEventTime());
             }
             else{
                 convertView=lmap.get(position);

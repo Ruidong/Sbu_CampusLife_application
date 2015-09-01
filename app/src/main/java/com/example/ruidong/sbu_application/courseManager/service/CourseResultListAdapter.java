@@ -33,7 +33,6 @@ public class CourseResultListAdapter extends ArrayAdapter {
     public final class ListItemView{
         public TextView title;
         public TextView location;
-        public TextView time;
     }
 
     public CourseResultListAdapter(Context context, ArrayList<CourseManagerPOI> PoiList){
@@ -77,14 +76,12 @@ public class CourseResultListAdapter extends ArrayAdapter {
                 convertView = listContainer.inflate(R.layout.category_result_adapter, null);
                 listItemView.title = (TextView) convertView.findViewById(R.id.lableText);
                 listItemView.location = (TextView) convertView.findViewById(R.id.locationText);
-                listItemView.time = (TextView) convertView.findViewById(R.id.TimeText);
 
                 lmap.put(position,convertView);
                 convertView.setTag(listItemView);
 
                 listItemView.title.setText((String) PoiList.get(position).getCourseNumber()+"("+PoiList.get(position).getCourseName()+")");
                 listItemView.location.setText((String) PoiList.get(position).getCourseLocation());
-                listItemView.time.setText((String) PoiList.get(position).getCourseTime());
             }
             else{
                 convertView=lmap.get(position);

@@ -13,9 +13,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
@@ -51,11 +53,12 @@ public class EventCalendarFragment extends Fragment
 
     private View view;
     private NavigationActivity activity;
-    private NestedListView listView;
+    private ListView listView;
     private TextView bottomText;
     private ArrayList<EventPOI> listInfo = new ArrayList<>();
     private Utility utility;
     private EventCalendarFragment selfFragment;
+    private int listViewTouchAction;
     public EventCalendarFragment(){
 
     }
@@ -65,8 +68,15 @@ public class EventCalendarFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.event_calendar,null);
+
+        int widthPixels=view.getContext().getResources().getDisplayMetrics().widthPixels;
+
         scrollView=(ScrollView)view.findViewById(R.id.scrollView);
-        listView=(NestedListView)view.findViewById(R.id.listview);
+
+        listView=(ListView)view.findViewById(R.id.listview);
+
+
+
         bottomText = (TextView)view.findViewById(R.id.bottomText);
         Locale.setDefault(Locale.US);
 
@@ -103,6 +113,8 @@ public class EventCalendarFragment extends Fragment
                 refreshCalendar();
             }
         });
+
+
         gridview.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
@@ -138,7 +150,14 @@ public class EventCalendarFragment extends Fragment
                 setList(desc);
                 EventResultListAdapter adapter = new EventResultListAdapter(getActivity(),
                         listInfo);
+
+
                 listView.setAdapter(adapter);
+
+               setListViewHeight(listView);
+
+
+
                 if (desc.size() == 0) {
                     bottomText.setText("No Event in this day !");
                 }
@@ -186,7 +205,6 @@ public class EventCalendarFragment extends Fragment
     }
 
     public void setListViewHeight(ListView listView) {
-
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) {
             return;
@@ -201,6 +219,7 @@ public class EventCalendarFragment extends Fragment
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);
     }
+
 
     public void setList( ArrayList<POI> resultPoiList){
         for(POI PoiElement : resultPoiList)

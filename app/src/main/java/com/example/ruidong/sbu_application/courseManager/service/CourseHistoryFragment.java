@@ -12,9 +12,12 @@ import android.widget.TextView;
 
 import com.example.ruidong.sbu_application.framework.NavigationActivity;
 import com.example.ruidong.sbu_application.R;
+import com.example.ruidong.sbu_application.framework.POI;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -29,6 +32,7 @@ public class CourseHistoryFragment extends Fragment {
     private Button checkGPA;
     private Fragment historyFragment;
     private CourseScheduleFragment courseScheduleFragment;
+    public  ArrayList<POI> resultPoiList = new ArrayList<>();
     private Fragment resultFragment;
     private TextView GPAText;
     public CourseHistoryFragment(){
@@ -43,7 +47,7 @@ public class CourseHistoryFragment extends Fragment {
         schedule= (Button) view.findViewById(R.id.course_shedule);
         activity = (NavigationActivity) getActivity();
         CourseManagementService service = activity.getCourseService();
-        setTargetList(service.getCoursesHistoryList());
+        setTargetList(service.getCoursesHistoryList(),service.getTargetPOI("my course"));
 
         HistoryExpandableListAdapter adapter = new HistoryExpandableListAdapter(getActivity(),courseList,courseDetailData);
         list.setAdapter(adapter);
@@ -80,13 +84,22 @@ public class CourseHistoryFragment extends Fragment {
                 else{
                     historyFragment=activity.getLoginFragment().getCourseHistoryFragment();
                 }
-                System.out.println("2222222222222"+historyFragment==null);
 
                 FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().remove(historyFragment);
                 tran.commit();
                 courseScheduleFragment =  new CourseScheduleFragment();
-                FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().add(R.id.Category_result_Container,courseScheduleFragment);
+                activity.courseScheduleFragment = courseScheduleFragment;
+                FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().add(R.id.CourseSchedule_container,courseScheduleFragment);
+                tran1.addToBackStack(null);
                 tran1.commit();
+
+                activity.setServiceNumber(1);
+                NavigationActivity.myMarkerList = resultPoiList;
+                activity.setBottomButtonFragmentList(resultPoiList, 1);
+                activity.getShowListButton().setVisibility(View.INVISIBLE);
+                activity.setUpCluster(resultPoiList);
+                resultPoiList.clear();
+                NavigationActivity.myMarkerList.clear();
 
             }
         });
@@ -97,7 +110,9 @@ public class CourseHistoryFragment extends Fragment {
         return this.courseScheduleFragment;
     }
 
-    public  void setTargetList(ArrayList<Course> courseHistoryList){
+    public  void setTargetList(ArrayList<Course> courseHistoryList,ArrayList<POI> courseScheduleList){
+
+        resultPoiList.addAll(removeDuplicateWithOrder(courseScheduleList));
 
         for(Course courseElement : courseHistoryList)
         {
@@ -111,4 +126,11 @@ public class CourseHistoryFragment extends Fragment {
         }
     }
 
+    private ArrayList<POI> removeDuplicateWithOrder(ArrayList<POI> list) {
+        Set<POI> set = new HashSet<POI>(list.size());
+        set.addAll(list);
+        ArrayList<POI> newList = new ArrayList<POI>(set.size());
+        newList.addAll(set);
+        return newList;
+    }
 }

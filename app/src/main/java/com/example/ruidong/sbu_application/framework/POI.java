@@ -22,7 +22,6 @@ public class POI implements ClusterItem {
         mPosition = position;
     }
 
-
     public int getPoiId()
     {
         return poiId;

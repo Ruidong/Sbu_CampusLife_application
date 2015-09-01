@@ -49,6 +49,7 @@ public class SbuDailySumView extends SumViewFragment {
     private Fragment selfFragment;
     private BottomButton bottomButton;
     private ScrollView scrollView;
+    private NavigationActivity activity;
     public SbuDailySumView(){
     }
 
@@ -57,7 +58,7 @@ public class SbuDailySumView extends SumViewFragment {
                              Bundle savedInstanceState) {
 
         View view= inflater.inflate(R.layout.daily_sum_view, container, false);
-
+        activity=(NavigationActivity)getActivity();
         detailedListView=(LinearLayout)view.findViewById(R.id.myDetailedListView);
         listViewMainButton=(LinearLayout)view.findViewById(R.id.ListViewMainButton);
         text1=(TextView)view.findViewById(R.id.textView3);
@@ -72,11 +73,34 @@ public class SbuDailySumView extends SumViewFragment {
 
             @Override
             public void onClick(View v) {
+                if(activity.getSumViewFragmentFlag()==true){
+                    selfFragment=activity.getSumViewFragment();
+                    FragmentTransaction tran=getFragmentManager().beginTransaction().remove(selfFragment);
+                    tran.commit();
+                    activity.setSumViewFragmentFlag(false);
+                    FragmentTransaction resultTran = activity.getSupportFragmentManager().beginTransaction()
+                            .add(R.id.Category_result_Container, activity.dailyResultFragment);
+                    resultTran.addToBackStack(null);
+                    resultTran.commit();
+                }
+                else if(activity.getSumViewFragmentClusterFlag() == true){
+                    selfFragment=activity.getSumViewFragment();
+                    FragmentTransaction tran=getFragmentManager().beginTransaction().remove(selfFragment);
+                    tran.commit();
+                    activity.setSumViewFragmentClusterFlag(false);
+                    FragmentTransaction resultTran = activity.getSupportFragmentManager().beginTransaction()
+                            .add(R.id.Cluster_result_Container, activity.getDailyClusterResultFragment());
+                    resultTran.addToBackStack(null);
+                    resultTran.commit();
 
-                bottomButton= NavigationActivity.bottomFrag;
-                selfFragment= bottomButton.SumViewBot;
-                FragmentTransaction tran=getFragmentManager().beginTransaction().remove(selfFragment);
-                tran.commit();
+                }
+                else
+                {
+                    bottomButton= NavigationActivity.bottomFrag;
+                    selfFragment= bottomButton.SumViewBot;
+                    FragmentTransaction tran=getFragmentManager().beginTransaction().remove(selfFragment);
+                    tran.commit();
+                }
 
             }
         });
@@ -91,6 +115,7 @@ public class SbuDailySumView extends SumViewFragment {
 
         return view;
     }
+
 
     public void setListViewHeight(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
@@ -108,8 +133,6 @@ public class SbuDailySumView extends SumViewFragment {
         listView.setLayoutParams(params);
     }
 
-
-
     @Override
     public void setPOI(POI currentPOI){
         this.poi=(SbuDailyLifePOI)currentPOI;
@@ -119,7 +142,6 @@ public class SbuDailySumView extends SumViewFragment {
         this.msg1=str1;
         this.msg2=str2;
     }
-
 
     private void setListText(){
         text1.setText(msg1);
@@ -137,8 +159,6 @@ public class SbuDailySumView extends SumViewFragment {
 
         return list;
     }
-
-
     private  class StableArrayAdapter extends ArrayAdapter<String> {
 
         HashMap<String, Integer> mIdMap = new HashMap<String, Integer>();
@@ -150,7 +170,6 @@ public class SbuDailySumView extends SumViewFragment {
                 mIdMap.put(objects.get(i), i);
             }
         }
-
         @Override
         public long getItemId(int position) {
             String item = getItem(position);

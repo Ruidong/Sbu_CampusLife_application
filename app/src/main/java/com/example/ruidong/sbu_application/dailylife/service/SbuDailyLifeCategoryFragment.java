@@ -128,7 +128,6 @@ public class SbuDailyLifeCategoryFragment extends CategoryFragment {
 
                 }
             }
-            activity.setServiceNumber(0);
             NavigationActivity.myMarkerList = resultPoiList;
             activity.setBottomButtonFragmentList(resultPoiList,0);
 
@@ -146,7 +145,6 @@ public class SbuDailyLifeCategoryFragment extends CategoryFragment {
             resultPoiList.clear();
             NavigationActivity.myMarkerList.clear();
             NavigationActivity.showResultListFlag = true;
-            NavigationActivity.editText.setText(" ");
 
           }
             else

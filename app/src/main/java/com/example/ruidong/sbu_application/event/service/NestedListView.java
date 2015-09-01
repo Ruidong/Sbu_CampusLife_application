@@ -12,7 +12,7 @@ import android.widget.ListView;
 /**
  * Created by Ruidong on 7/1/2015.
  */
-public class NestedListView extends ListView implements View.OnTouchListener, AbsListView.OnScrollListener {
+    public class NestedListView extends ListView implements View.OnTouchListener, AbsListView.OnScrollListener {
 
     private int listViewTouchAction;
     private static final int MAXIMUM_LIST_ITEMS_VIEWABLE = 99;
@@ -45,6 +45,8 @@ public class NestedListView extends ListView implements View.OnTouchListener, Ab
         int newHeight = 0;
         final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
         int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+
+
         if (heightMode != MeasureSpec.EXACTLY) {
             ListAdapter listAdapter = getAdapter();
             if (listAdapter != null && !listAdapter.isEmpty()) {
@@ -70,6 +72,7 @@ public class NestedListView extends ListView implements View.OnTouchListener, Ab
         } else {
             newHeight = getMeasuredHeight();
         }
+
         setMeasuredDimension(getMeasuredWidth(), newHeight);
     }
 

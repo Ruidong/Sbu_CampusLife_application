@@ -59,7 +59,7 @@ public class EventService implements OncampusAppService {
 
     public void setEventMap(){
         eventMap.clear();
-        eventMap.put("my event", new EventPOI(1, "Love and Blessings: The Art of Baby Carriers", "Wang Center", "6/24/2015", "rebornzrd@gmail.com",
+        eventMap.put("my event", new EventPOI(1, "Love and Blessings", "Wang Center", "6/24/2015", "rebornzrd@gmail.com",
                 "Celebrating precious traditions and the culture of baby carriers from Taiwan and Southwestern China"
                 , new LatLng(40.914833, -73.127761)));
         eventMap.put("my event", new EventPOI(1, "Event 1", "Wang Center", "6/24/2015", "rebornzrd@gmail.com",

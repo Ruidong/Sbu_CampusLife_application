@@ -32,9 +32,8 @@ public class CourseScheduleFragment extends Fragment {
     private Button history;
     private CourseScheduleFragment courseScheduleFragment;
     public  ArrayList<POI> resultPoiList = new ArrayList<>();
-    private Button showMarker;
-    private boolean showMarkerFlag;
     private CourseHistoryFragment historyFragment;
+    private Button hideView;
     public CourseScheduleFragment(){
 
     }
@@ -44,27 +43,37 @@ public class CourseScheduleFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.course_schedule, null);
         list = (ExpandableListView)view.findViewById(R.id.list);
+        hideView=(Button)view.findViewById(R.id.hideView);
         activity = (NavigationActivity) getActivity();
         CourseManagementService service = activity.getCourseService();
         setTargetList(service.getTargetPOI("my course"));
         ScheduleExpandableListAdapter adapter = new ScheduleExpandableListAdapter(getActivity(),weekList,courseDetailData);
         list.setAdapter(adapter);
 
+        hideView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                CourseHistoryFragment historyFragment = activity.getCourseHistoryFragment();
+                courseScheduleFragment = historyFragment.getCourseScheduleFragment();
+                FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().remove(courseScheduleFragment);
+                tran1.commit();
+
+            }
+        });
+
+
         history = (Button)view.findViewById(R.id.course_history);
         history.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(activity.getCourseHistoryFragment() !=null){
-                    historyFragment = activity.getCourseHistoryFragment();
-                }
-                else {
-                    historyFragment = activity.getLoginFragment().getCourseHistoryFragment();
-                }
+                historyFragment = new CourseHistoryFragment();
+                activity.setCourseHistoryFragment(historyFragment);
                 FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().add(R.id.CourseHistory_container, historyFragment);
                 tran.addToBackStack(null);
                 tran.commit();
-                courseScheduleFragment = historyFragment.getCourseScheduleFragment();
-                FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().hide(courseScheduleFragment);
+                courseScheduleFragment = activity.courseScheduleFragment;
+                FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().remove(courseScheduleFragment);
                 tran1.commit();
             }
         });
@@ -72,10 +81,10 @@ public class CourseScheduleFragment extends Fragment {
         list.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                if(showMarkerFlag == true){
+
                 CourseHistoryFragment historyFragment = activity.getCourseHistoryFragment();
                 courseScheduleFragment = historyFragment.getCourseScheduleFragment();
-                FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().hide(courseScheduleFragment);
+                FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().remove(courseScheduleFragment);
                 tran1.commit();
                 POI currentPOI = courseDetailData.get(weekList.get(groupPosition)).get(childPosition);
                 Marker marker = NavigationActivity.mMarkersHashMap2.get(currentPOI);
@@ -85,29 +94,12 @@ public class CourseScheduleFragment extends Fragment {
                 }
                 activity.setBottomButtonFragment(currentPOI);
                 activity.setClusterItemFragToFalse();
-                activity.setClusterResultFragmentFlagToFalse();}
-                else{
-                    Toast.makeText(getActivity(),"Please Click showMarker Button to set marker",Toast.LENGTH_SHORT).show();
-                }
+                activity.setClusterResultFragmentFlagToFalse();
+
                 return true;
             }
         });
 
-        showMarker = (Button) view.findViewById(R.id.Show_marker);
-        showMarker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showMarkerFlag =true;
-                activity.setServiceNumber(1);
-                NavigationActivity.myMarkerList = resultPoiList;
-                activity.setBottomButtonFragmentList(resultPoiList,1);
-                activity.getShowListButton().setVisibility(View.INVISIBLE);
-                activity.setUpCluster(resultPoiList);
-                resultPoiList.clear();
-                NavigationActivity.myMarkerList.clear();
-                NavigationActivity.editText.setText(" ");
-            }
-        });
         return view;
     }
 
@@ -115,12 +107,12 @@ public class CourseScheduleFragment extends Fragment {
 
     public  void setTargetList(ArrayList<POI> courseScheduleList){
         resultPoiList.addAll(removeDuplicateWithOrder(courseScheduleList));
+        weekList.clear();
         weekList.add("Monday");
         weekList.add("Tuesday");
         weekList.add("Wednesday");
         weekList.add("Thursday");
         weekList.add("Friday");
-
         for(String str : weekList){
             ArrayList<CourseManagerPOI> courseDetail = new ArrayList<>();
             for(POI poi : courseScheduleList){
