@@ -29,6 +29,7 @@ import com.example.ruidong.sbu_application.framework.POI;
 import com.example.ruidong.sbu_application.R;
 import com.example.ruidong.sbu_application.framework.SumViewFragment;
 import com.example.ruidong.sbu_application.event.service.NestedListView;
+import com.example.ruidong.sbu_application.framework.common.tool.FragmentIdPair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +49,7 @@ public class CourseSumView extends SumViewFragment {
     private Fragment selfFragment;
     private BottomButton bottomButton;
     private ScrollView scrollView;
+    private NavigationActivity activity;
     public CourseSumView(){
     }
 
@@ -56,7 +58,7 @@ public class CourseSumView extends SumViewFragment {
                              Bundle savedInstanceState) {
 
         View view= inflater.inflate(R.layout.course_sum_view, container, false);
-
+        activity=(NavigationActivity)getActivity();
         detailedListView=(LinearLayout)view.findViewById(R.id.myDetailedListView);
         listViewMainButton=(LinearLayout)view.findViewById(R.id.ListViewMainButton);
         text1=(TextView)view.findViewById(R.id.textView3);
@@ -72,11 +74,16 @@ public class CourseSumView extends SumViewFragment {
             @Override
             public void onClick(View v) {
 
-                bottomButton= NavigationActivity.bottomFrag;
-                selfFragment= bottomButton.SumViewBot;
+                selfFragment=activity.getSumViewFragment();
                 FragmentTransaction tran=getFragmentManager().beginTransaction().remove(selfFragment);
+                activity.backButtonStack.pop();
                 tran.commit();
+                if(!activity.backButtonStack.isEmpty()){
+                    FragmentIdPair nextPair = activity.backButtonStack.peek();
+                    FragmentTransaction tran2 = activity.getSupportFragmentManager().beginTransaction().add(nextPair.getFragmentLayoutID(),nextPair.getFragment());
+                    tran2.commit();
 
+                }
             }
         });
 

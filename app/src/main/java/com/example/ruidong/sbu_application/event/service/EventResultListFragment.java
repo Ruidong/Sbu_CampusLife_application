@@ -83,7 +83,6 @@ public class EventResultListFragment extends Fragment{
                 activity.setBottomButtonFragment(currentPOI);
                 activity.getShowListButton().setVisibility(View.INVISIBLE);
                 activity.setClusterItemFragToFalse();
-                activity.setClusterResultFragmentFlagToFalse();;
 
             }
         });

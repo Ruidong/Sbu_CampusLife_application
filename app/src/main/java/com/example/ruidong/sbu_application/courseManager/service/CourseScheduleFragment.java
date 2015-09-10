@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.example.ruidong.sbu_application.framework.NavigationActivity;
 import com.example.ruidong.sbu_application.framework.POI;
 import com.example.ruidong.sbu_application.R;
+import com.example.ruidong.sbu_application.framework.common.tool.FragmentIdPair;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
@@ -58,7 +59,8 @@ public class CourseScheduleFragment extends Fragment {
                 courseScheduleFragment = historyFragment.getCourseScheduleFragment();
                 FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().remove(courseScheduleFragment);
                 tran1.commit();
-
+                activity.showReadButton();
+                activity.backButtonStack.push(activity.backButtonStack.peek());
             }
         });
 
@@ -70,7 +72,8 @@ public class CourseScheduleFragment extends Fragment {
                 historyFragment = new CourseHistoryFragment();
                 activity.setCourseHistoryFragment(historyFragment);
                 FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().add(R.id.CourseHistory_container, historyFragment);
-                tran.addToBackStack(null);
+                FragmentIdPair pair =new FragmentIdPair(historyFragment,R.id.CourseHistory_container,2);
+                activity.backButtonStack.push(pair);
                 tran.commit();
                 courseScheduleFragment = activity.courseScheduleFragment;
                 FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().remove(courseScheduleFragment);
@@ -82,19 +85,9 @@ public class CourseScheduleFragment extends Fragment {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 
-                CourseHistoryFragment historyFragment = activity.getCourseHistoryFragment();
-                courseScheduleFragment = historyFragment.getCourseScheduleFragment();
-                FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().remove(courseScheduleFragment);
-                tran1.commit();
+
                 POI currentPOI = courseDetailData.get(weekList.get(groupPosition)).get(childPosition);
-                Marker marker = NavigationActivity.mMarkersHashMap2.get(currentPOI);
-                activity.setClickedClusterItem(currentPOI);
-                if (marker != null) {
-                    marker.showInfoWindow();
-                }
-                activity.setBottomButtonFragment(currentPOI);
-                activity.setClusterItemFragToFalse();
-                activity.setClusterResultFragmentFlagToFalse();
+                activity.responseOfResultListItemClick(currentPOI);
 
                 return true;
             }

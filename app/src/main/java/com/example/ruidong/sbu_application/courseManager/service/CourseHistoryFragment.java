@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.example.ruidong.sbu_application.framework.NavigationActivity;
 import com.example.ruidong.sbu_application.R;
 import com.example.ruidong.sbu_application.framework.POI;
+import com.example.ruidong.sbu_application.framework.common.tool.FragmentIdPair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class CourseHistoryFragment extends Fragment {
     private Fragment historyFragment;
     private CourseScheduleFragment courseScheduleFragment;
     public  ArrayList<POI> resultPoiList = new ArrayList<>();
-    private Fragment resultFragment;
+    public ArrayList<POI> restoreList;
     private TextView GPAText;
     public CourseHistoryFragment(){
 
@@ -61,51 +62,47 @@ public class CourseHistoryFragment extends Fragment {
 //                GPAText.setText(activity.getLoginFragment().GetGPA());
 //            }
 //        });
-
-
-        schedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NavigationActivity.map.clear();
-                if(NavigationActivity.myMarkerList!=null){
-                NavigationActivity.myMarkerList.clear();}
-                NavigationActivity.showResultListFlag=false;
-
-                if(NavigationActivity.dailyResultFragment !=null){
-                    FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().remove(NavigationActivity.dailyResultFragment);
-                    tran.commit();
-                }
-                if(NavigationActivity.courseResultFragment !=null){
-                    FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().remove(NavigationActivity.courseResultFragment);
-                    tran.commit();
-                }
-                if(activity.getCourseHistoryFragment()!=null){
-                historyFragment=activity.getCourseHistoryFragment();}
-                else{
-                    historyFragment=activity.getLoginFragment().getCourseHistoryFragment();
-                }
-
-                FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().remove(historyFragment);
-                tran.commit();
-                courseScheduleFragment =  new CourseScheduleFragment();
-                activity.courseScheduleFragment = courseScheduleFragment;
-                FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().add(R.id.CourseSchedule_container,courseScheduleFragment);
-                tran1.addToBackStack(null);
-                tran1.commit();
-
-                activity.setServiceNumber(1);
-                NavigationActivity.myMarkerList = resultPoiList;
-                activity.setBottomButtonFragmentList(resultPoiList, 1);
-                activity.getShowListButton().setVisibility(View.INVISIBLE);
-                activity.setUpCluster(resultPoiList);
-                resultPoiList.clear();
-                NavigationActivity.myMarkerList.clear();
-
-            }
-        });
-
+        schedule.setOnClickListener(new ScheduleOnClickListener(restoreList));
         return view;
     }
+
+    public class ScheduleOnClickListener implements View.OnClickListener{
+        public ArrayList<POI> courseList = new ArrayList<>();
+        ScheduleOnClickListener(ArrayList<POI> list){
+            this.courseList.addAll(removeDuplicateWithOrder(list));
+            System.out.println("courselist"+courseList);
+        }
+        @Override
+        public void onClick(View v) {
+            NavigationActivity.map.clear();
+            if(NavigationActivity.myMarkerList!=null){
+                NavigationActivity.myMarkerList.clear();}
+            NavigationActivity.showResultListFlag=false;
+
+            if(activity.getCourseHistoryFragment()!=null){
+                historyFragment=activity.getCourseHistoryFragment();}
+            else{
+                historyFragment=activity.getLoginFragment().getCourseHistoryFragment();
+            }
+            courseScheduleFragment =  new CourseScheduleFragment();
+            activity.courseScheduleFragment = courseScheduleFragment;
+            FragmentTransaction tran1 = activity.getSupportFragmentManager().beginTransaction().add(R.id.CourseSchedule_container,courseScheduleFragment);
+            FragmentIdPair pair = new FragmentIdPair(courseScheduleFragment,R.id.CourseSchedule_container,2);
+            activity.backButtonStack.push(pair);
+            tran1.commit();
+            activity.setServiceNumber(1);
+
+            NavigationActivity.myMarkerList = courseList;
+            activity.setBottomButtonFragmentList(courseList, 1);
+            activity.getShowListButton().setVisibility(View.INVISIBLE);
+            activity.setUpCluster(courseList);
+            courseList.clear();
+            NavigationActivity.myMarkerList.clear();
+            FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().remove(historyFragment);
+            tran.commit();
+        }
+    }
+
     public CourseScheduleFragment getCourseScheduleFragment(){
         return this.courseScheduleFragment;
     }
@@ -113,7 +110,7 @@ public class CourseHistoryFragment extends Fragment {
     public  void setTargetList(ArrayList<Course> courseHistoryList,ArrayList<POI> courseScheduleList){
 
         resultPoiList.addAll(removeDuplicateWithOrder(courseScheduleList));
-
+        restoreList=resultPoiList;
         for(Course courseElement : courseHistoryList)
         {
             courseList.add(courseElement.getCourseTitle());

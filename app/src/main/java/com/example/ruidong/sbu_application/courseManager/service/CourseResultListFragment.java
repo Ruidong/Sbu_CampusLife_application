@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.ruidong.sbu_application.framework.NavigationActivity;
@@ -39,6 +40,7 @@ public class CourseResultListFragment extends Fragment{
     private CourseResultListFragment selfFrag;
     private ArrayList<CourseManagerPOI> PoiList = new ArrayList<CourseManagerPOI>();
     private ArrayList<CourseManagerPOI> restoreList;
+    private Button hideView;
     public CourseResultListFragment(){
 
     }
@@ -61,32 +63,22 @@ public class CourseResultListFragment extends Fragment{
         });
         this.list.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+        hideView = (Button) view.findViewById(R.id.button);
+        hideView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                activity.removeClusterResult();
+            }
+        });
 
         this.list.setOnItemClickListener(new OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                selfFrag = (CourseResultListFragment) NavigationActivity.courseResultFragment;
-                FragmentTransaction tran = getFragmentManager().beginTransaction().remove(selfFrag);
-                tran.commit();
-
-                if(activity.getCourseClusterResultFragment()!=null) {
-                    CourseResultListFragment clusterFrag = activity.getCourseClusterResultFragment();
-                    FragmentTransaction tran2 = getFragmentManager().beginTransaction().remove(clusterFrag);
-                    tran2.commit();
-                }
                 POI currentPOI = restoreList.get(position);
-                Marker marker = NavigationActivity.mMarkersHashMap2.get(currentPOI);
-                activity.setClickedClusterItem(currentPOI);
-                if (marker != null) {
-
-                    marker.showInfoWindow();
-                }
-                activity.setBottomButtonFragment(currentPOI);
-                activity.getShowListButton().setVisibility(View.INVISIBLE);
-                activity.setClusterItemFragToFalse();
-                activity.setClusterResultFragmentFlagToFalse();;
+                activity.responseOfClusterResultListItemClick(currentPOI);
 
             }
         });
@@ -96,20 +88,6 @@ public class CourseResultListFragment extends Fragment{
 
     public void setPoiList(ArrayList<CourseManagerPOI> poiList){
         this.PoiList = poiList;
-    }
-    public  void setTargetList(ArrayList<POI> resultPoiList){
-
-        for(POI PoiElement : resultPoiList)
-        {
-            CourseManagerPOI CMPoi = (CourseManagerPOI)PoiElement;
-            PoiList.add(CMPoi);
-        }
-    }
-    public ListView getListView(){
-        return this.list;
-    }
-    public void clearList(){
-        PoiList.clear();
     }
 
     private ArrayList<CourseManagerPOI> removeDuplicateWithOrder(ArrayList<CourseManagerPOI> list) {

@@ -20,6 +20,7 @@ import com.example.ruidong.sbu_application.R;
 import com.example.ruidong.sbu_application.courseManager.service.CourseSumView;
 import com.example.ruidong.sbu_application.dailylife.service.SbuDailySumView;
 import com.example.ruidong.sbu_application.event.service.EventSumView;
+import com.example.ruidong.sbu_application.framework.common.tool.FragmentIdPair;
 
 public class BottomButton extends Fragment{
 
@@ -84,36 +85,15 @@ public class BottomButton extends Fragment{
             switch (position) {
 
                 case 0: {
-                    SbuDailySumView dailySumView = new SbuDailySumView();
-                    dailySumView.setPOI(bottomButtonPOI);
-                    dailySumView.setMsg(msg1, msg2);
-                    FragmentTransaction dailySumViewStart = getFragmentManager().beginTransaction().add(R.id.summaryView, dailySumView);
-                    dailySumViewStart.show(dailySumView);
-                    dailySumViewStart.addToBackStack(null);
-                    dailySumViewStart.commit();
-                    SumViewBot = dailySumView;
+                    activity.ShowDailySumViewFragment(bottomButtonPOI);
                     break;
                     }
                 case 1: {
-                    CourseSumView courseSumView = new CourseSumView();
-                    courseSumView.setPOI(bottomButtonPOI);
-                    courseSumView.setMsg(msg1, msg2);
-                    FragmentTransaction courseSumViewStart = getFragmentManager().beginTransaction().add(R.id.summaryView, courseSumView);
-                    courseSumViewStart.show(courseSumView);
-                    courseSumViewStart.addToBackStack(null);
-                    courseSumViewStart.commit();
-                    SumViewBot = courseSumView;
+                    activity.ShowCourseSumViewFragment(bottomButtonPOI);
                     break;
                 }
                 case 2: {
-                    EventSumView eventSumView = new EventSumView();
-                    eventSumView.setPOI(bottomButtonPOI);
-                    eventSumView.setMsg(msg1, msg2);
-                    FragmentTransaction eventSumViewStart = getFragmentManager().beginTransaction().add(R.id.summaryView, eventSumView);
-                    eventSumViewStart.show(eventSumView);
-                    eventSumViewStart.addToBackStack(null);
-                    eventSumViewStart.commit();
-                    SumViewBot = eventSumView;
+                    activity.ShowEventSumViewFragment(bottomButtonPOI);
                     break;
                 }
 

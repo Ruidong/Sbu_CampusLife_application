@@ -35,6 +35,7 @@ import com.example.ruidong.sbu_application.framework.NavigationActivity;
 import com.example.ruidong.sbu_application.framework.POI;
 import com.example.ruidong.sbu_application.R;
 import com.example.ruidong.sbu_application.framework.SumViewFragment;
+import com.example.ruidong.sbu_application.framework.common.tool.FragmentIdPair;
 
 
 public class SbuDailySumView extends SumViewFragment {
@@ -50,6 +51,7 @@ public class SbuDailySumView extends SumViewFragment {
     private BottomButton bottomButton;
     private ScrollView scrollView;
     private NavigationActivity activity;
+    private int layoutID;
     public SbuDailySumView(){
     }
 
@@ -73,35 +75,17 @@ public class SbuDailySumView extends SumViewFragment {
 
             @Override
             public void onClick(View v) {
-                if(activity.getSumViewFragmentFlag()==true){
+
                     selfFragment=activity.getSumViewFragment();
                     FragmentTransaction tran=getFragmentManager().beginTransaction().remove(selfFragment);
+                    activity.backButtonStack.pop();
                     tran.commit();
-                    activity.setSumViewFragmentFlag(false);
-                    FragmentTransaction resultTran = activity.getSupportFragmentManager().beginTransaction()
-                            .add(R.id.Category_result_Container, activity.dailyResultFragment);
-                    resultTran.addToBackStack(null);
-                    resultTran.commit();
-                }
-                else if(activity.getSumViewFragmentClusterFlag() == true){
-                    selfFragment=activity.getSumViewFragment();
-                    FragmentTransaction tran=getFragmentManager().beginTransaction().remove(selfFragment);
-                    tran.commit();
-                    activity.setSumViewFragmentClusterFlag(false);
-                    FragmentTransaction resultTran = activity.getSupportFragmentManager().beginTransaction()
-                            .add(R.id.Cluster_result_Container, activity.getDailyClusterResultFragment());
-                    resultTran.addToBackStack(null);
-                    resultTran.commit();
+                    if(!activity.backButtonStack.isEmpty()){
+                        FragmentIdPair nextPair = activity.backButtonStack.peek();
+                        FragmentTransaction tran2 = activity.getSupportFragmentManager().beginTransaction().add(nextPair.getFragmentLayoutID(),nextPair.getFragment());
+                        tran2.commit();
 
-                }
-                else
-                {
-                    bottomButton= NavigationActivity.bottomFrag;
-                    selfFragment= bottomButton.SumViewBot;
-                    FragmentTransaction tran=getFragmentManager().beginTransaction().remove(selfFragment);
-                    tran.commit();
-                }
-
+                    }
             }
         });
 
@@ -116,6 +100,12 @@ public class SbuDailySumView extends SumViewFragment {
         return view;
     }
 
+    public int getLayoutID(){
+        return this.layoutID;
+    }
+    public void setLayoutID(int ID){
+        this.layoutID = ID;
+    }
 
     public void setListViewHeight(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();

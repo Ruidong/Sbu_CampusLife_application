@@ -30,6 +30,7 @@ import com.example.ruidong.sbu_application.framework.POI;
 import com.example.ruidong.sbu_application.R;
 //import com.example.ruidong.sbu_application.ShowListButton;
 import com.example.ruidong.sbu_application.framework.CategoryFragment;
+import com.example.ruidong.sbu_application.framework.common.tool.FragmentIdPair;
 
 public class SbuDailyLifeCategoryFragment extends CategoryFragment {
 
@@ -111,10 +112,8 @@ public class SbuDailyLifeCategoryFragment extends CategoryFragment {
 
     @Override
     public void doneButtonMethod(ArrayList<String> checkedList) {
-        Fragment selfFragment = NavigationActivity.MenuFragment;
-        FragmentTransaction tran = getFragmentManager().beginTransaction().remove(selfFragment);
+        FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().remove(activity.backButtonStack.peek().getFragment());
         tran.commit();
-
         if(checkedList!=null) {
             for (int i = 0; i < checkedList.size(); i++) {
                 String keyword = checkedList.get(i);
@@ -138,6 +137,8 @@ public class SbuDailyLifeCategoryFragment extends CategoryFragment {
             FragmentTransaction resultTran = mActivity.getSupportFragmentManager().beginTransaction()
                     .add(R.id.Category_result_Container, resultFragment);
             resultTran.commit();
+            FragmentIdPair pair = new FragmentIdPair(resultFragment,R.id.Category_result_Container,2);
+            activity.backButtonStack.push(pair);
 
             activity.getShowListButton().setVisibility(View.INVISIBLE);
 

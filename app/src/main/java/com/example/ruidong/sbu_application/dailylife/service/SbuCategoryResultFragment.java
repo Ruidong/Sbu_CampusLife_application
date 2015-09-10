@@ -22,16 +22,11 @@ import java.util.Collections;
         import com.example.ruidong.sbu_application.framework.NavigationActivity;
         import com.example.ruidong.sbu_application.framework.POI;
         import com.example.ruidong.sbu_application.R;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.Marker;
 
 
-
-        import android.os.Bundle;
+import android.os.Bundle;
         import android.support.v4.app.Fragment;
-        import android.support.v4.app.FragmentTransaction;
-        import android.view.LayoutInflater;
+import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
         import android.widget.AdapterView;
