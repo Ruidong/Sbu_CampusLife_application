@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.example.ruidong.sbu_application.R;
 
 
-public class SbuCategoryResultAdapter extends BaseAdapter {
+public class SbuDailyLifeResultAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<SbuDailyLifePOI> POiList;
@@ -27,7 +27,7 @@ public class SbuCategoryResultAdapter extends BaseAdapter {
         public TextView infomation;
     }
 
-    public SbuCategoryResultAdapter(Context context, ArrayList<SbuDailyLifePOI> POiList){
+    public SbuDailyLifeResultAdapter(Context context, ArrayList<SbuDailyLifePOI> POiList){
 
         this.context=context;
         listContainer = LayoutInflater.from(context);

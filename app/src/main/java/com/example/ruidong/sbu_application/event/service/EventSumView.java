@@ -23,6 +23,7 @@ import com.example.ruidong.sbu_application.framework.NavigationActivity;
 import com.example.ruidong.sbu_application.framework.POI;
 import com.example.ruidong.sbu_application.R;
 import com.example.ruidong.sbu_application.framework.SumViewFragment;
+import com.example.ruidong.sbu_application.framework.common.tool.FragmentIdPair;
 
 import java.util.ArrayList;
 
@@ -40,6 +41,7 @@ public class EventSumView extends SumViewFragment {
     private Fragment selfFragment;
     private BottomButton bottomButton;
     private ScrollView scrollView;
+    private NavigationActivity activity;
     public EventSumView(){
     }
 
@@ -48,7 +50,7 @@ public class EventSumView extends SumViewFragment {
                              Bundle savedInstanceState) {
 
         View view= inflater.inflate(R.layout.course_sum_view, container, false);
-
+        activity = (NavigationActivity)getActivity();
         detailedListView=(LinearLayout)view.findViewById(R.id.myDetailedListView);
         listViewMainButton=(LinearLayout)view.findViewById(R.id.ListViewMainButton);
         text1=(TextView)view.findViewById(R.id.textView3);
@@ -64,11 +66,10 @@ public class EventSumView extends SumViewFragment {
             @Override
             public void onClick(View v) {
 
-                bottomButton= NavigationActivity.bottomFrag;
-                selfFragment= bottomButton.SumViewBot;
+                selfFragment=activity.getSumViewFragment();
                 FragmentTransaction tran=getFragmentManager().beginTransaction().remove(selfFragment);
+                activity.backButtonStack.pop();
                 tran.commit();
-
             }
         });
 

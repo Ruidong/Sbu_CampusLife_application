@@ -13,7 +13,7 @@ import java.util.Collection;
 
 
 
-public class GeneralService implements OncampusAppService {
+public class GeneralService extends OncampusAppService {
 
     public Multimap<String,POI> genMap= ArrayListMultimap.create();
     public  boolean genFlag=false;

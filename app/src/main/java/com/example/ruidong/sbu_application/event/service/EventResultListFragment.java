@@ -22,9 +22,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.example.ruidong.sbu_application.framework.BlankFragment;
 import com.example.ruidong.sbu_application.framework.NavigationActivity;
 import com.example.ruidong.sbu_application.framework.POI;
 import com.example.ruidong.sbu_application.R;
+import com.example.ruidong.sbu_application.framework.common.tool.FragmentIdPair;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class EventResultListFragment extends Fragment{
     private ListView list;
     private ArrayList<EventPOI> PoiList = new ArrayList<EventPOI>();
     private ArrayList<EventPOI> restoreList;
+    private BlankFragment blankFragment = new BlankFragment();
     public EventResultListFragment(){
 
     }
@@ -68,22 +71,9 @@ public class EventResultListFragment extends Fragment{
                                     int position, long id) {
 
 
-                if(activity.getEventClusterResultFragment()!=null) {
-                    EventResultListFragment clusterFrag = activity.getEventClusterResultFragment();
-                    FragmentTransaction tran2 = getFragmentManager().beginTransaction().remove(clusterFrag);
-                    tran2.commit();
-                }
+
                 POI currentPOI = restoreList.get(position);
-                Marker marker = NavigationActivity.mMarkersHashMap2.get(currentPOI);
-                activity.setClickedClusterItem(currentPOI);
-                if (marker != null) {
-
-                    marker.showInfoWindow();
-                }
-                activity.setBottomButtonFragment(currentPOI);
-                activity.getShowListButton().setVisibility(View.INVISIBLE);
-                activity.setClusterItemFragToFalse();
-
+                activity.responseOfClusterResultListItemClick(currentPOI);
             }
         });
 

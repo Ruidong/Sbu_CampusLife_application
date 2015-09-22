@@ -35,14 +35,14 @@ import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.ListView;
 
-public class SbuCategoryResultFragment extends Fragment{
+public class SbuDailyLifeResultFragment extends Fragment{
     private NavigationActivity activity ;
     private ListView list;
-    private SbuCategoryResultFragment selfFrag;
+    private SbuDailyLifeResultFragment selfFrag;
     private ArrayList<SbuDailyLifePOI> PoiList = new ArrayList<SbuDailyLifePOI>();
     private ArrayList<SbuDailyLifePOI> restoreList;
     private Button button;
-    public SbuCategoryResultFragment(){
+    public SbuDailyLifeResultFragment(){
 
     }
 
@@ -55,7 +55,7 @@ public class SbuCategoryResultFragment extends Fragment{
         list = (ListView) view.findViewById(R.id.listview);
         restoreList=removeDuplicateWithOrder(PoiList);
         System.out.print("restoreList Size = " + restoreList.size());
-        final SbuCategoryResultAdapter adapter = new SbuCategoryResultAdapter(getActivity(),
+        final SbuDailyLifeResultAdapter adapter = new SbuDailyLifeResultAdapter(getActivity(),
                 restoreList);
         Collections.sort(restoreList, new Comparator<SbuDailyLifePOI>() {
             public int compare(SbuDailyLifePOI Poi1, SbuDailyLifePOI Poi2) {

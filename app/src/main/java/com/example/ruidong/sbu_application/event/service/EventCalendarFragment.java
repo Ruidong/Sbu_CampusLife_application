@@ -27,9 +27,11 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.example.ruidong.sbu_application.framework.BlankFragment;
 import com.example.ruidong.sbu_application.framework.NavigationActivity;
 import com.example.ruidong.sbu_application.framework.POI;
 import com.example.ruidong.sbu_application.R;
+import com.example.ruidong.sbu_application.framework.common.tool.FragmentIdPair;
 import com.google.android.gms.maps.model.Marker;
 
 /**
@@ -47,7 +49,6 @@ public class EventCalendarFragment extends Fragment
 
     private ScrollView scrollView;
     ArrayList<String> event;
-    LinearLayout rLayout;
     ArrayList<String> date;
     ArrayList<POI> desc;
 
@@ -58,7 +59,7 @@ public class EventCalendarFragment extends Fragment
     private ArrayList<EventPOI> listInfo = new ArrayList<>();
     private Utility utility;
     private EventCalendarFragment selfFragment;
-    private int listViewTouchAction;
+    private BlankFragment blankFragment = new BlankFragment();
     public EventCalendarFragment(){
 
     }
@@ -181,10 +182,15 @@ public class EventCalendarFragment extends Fragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(listInfo.size()!= 0){
+                    FragmentTransaction tran = activity.getSupportFragmentManager().beginTransaction().add(R.id.CourseSchedule_container,blankFragment);
+                    tran.commit();
+                    FragmentIdPair pair1 = new FragmentIdPair(blankFragment,R.id.CourseHistory_container,2);
+                    activity.backButtonStack.push(pair1);
+
                     activity.setServiceNumber(2);
                     selfFragment = activity.getEventCalendarFragment();
-                    FragmentTransaction tran = getFragmentManager().beginTransaction().remove(selfFragment);
-                    tran.commit();
+                    FragmentTransaction tran1 = getFragmentManager().beginTransaction().remove(selfFragment);
+                    tran1.commit();
 
                     POI currentPOI = listInfo.get(position);
                     Marker marker = NavigationActivity.mMarkersHashMap2.get(currentPOI);

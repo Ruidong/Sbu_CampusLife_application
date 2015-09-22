@@ -16,7 +16,6 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -39,8 +38,7 @@ public class SbuDailyLifeCategoryFragment extends CategoryFragment {
     private SbuDailyLifeGridViewAdapter adapter;
     public static final ArrayList<String> categories = new ArrayList<String>();
     private  ArrayList<String> restoreList;
-    public SbuCategoryResultFragment resultFragment;
-//    public ShowListButton showListFragment;
+    public SbuDailyLifeResultFragment resultFragment;
     private NavigationActivity activity;
     public  ArrayList<POI> resultPoiList = new ArrayList<>() ;
     private SbuDailyLifeService dailyService;
@@ -55,7 +53,7 @@ public class SbuDailyLifeCategoryFragment extends CategoryFragment {
         button=(Button)view.findViewById(R.id.DoneButton);
         grid=(GridView)view.findViewById(R.id.gridView);
         button.setOnClickListener(new ClickEvent());
-        dailyService=NavigationActivity.dailyService;
+        dailyService=activity.getDailyLifeService();
     //  Six recommended categories
         categories.add("food");
         categories.add("coffee");
@@ -93,8 +91,8 @@ public class SbuDailyLifeCategoryFragment extends CategoryFragment {
     }
 
     class ClickEvent implements OnClickListener{
-        // The ArrayList is used for multiple selection, but there is a bug about it right now.
-        //  Only single selection runs well.
+
+
         @Override
         public void onClick(View v) {
             // TODO Auto-generated method stub
@@ -122,7 +120,6 @@ public class SbuDailyLifeCategoryFragment extends CategoryFragment {
                     if (activity.getClusterManager() != null) {
                         activity.getClusterManager().clearItems();
                     }
-                    dailyService.dailyFlag = true;
                     resultPoiList.addAll(dailyService.getTargetPOI(keyword));
 
                 }
@@ -130,9 +127,9 @@ public class SbuDailyLifeCategoryFragment extends CategoryFragment {
             NavigationActivity.myMarkerList = resultPoiList;
             activity.setBottomButtonFragmentList(resultPoiList,0);
 
-            resultFragment = new SbuCategoryResultFragment();
+            resultFragment = new SbuDailyLifeResultFragment();
             NavigationActivity.dailyResultFragment = resultFragment;
-            ((SbuCategoryResultFragment) resultFragment).setTargetList(resultPoiList);
+            ((SbuDailyLifeResultFragment) resultFragment).setTargetList(resultPoiList);
 
             FragmentTransaction resultTran = mActivity.getSupportFragmentManager().beginTransaction()
                     .add(R.id.Category_result_Container, resultFragment);

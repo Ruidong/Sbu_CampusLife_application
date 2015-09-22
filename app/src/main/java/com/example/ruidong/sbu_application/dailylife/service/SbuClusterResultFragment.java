@@ -14,7 +14,6 @@ package com.example.ruidong.sbu_application.dailylife.service;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +25,6 @@ import android.widget.ListView;
 import com.example.ruidong.sbu_application.R;
 import com.example.ruidong.sbu_application.framework.NavigationActivity;
 import com.example.ruidong.sbu_application.framework.POI;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +52,7 @@ public class SbuClusterResultFragment extends Fragment{
         list = (ListView) view.findViewById(R.id.listview);
         restoreList=removeDuplicateWithOrder(PoiList);
         System.out.print("restoreList Size = " + restoreList.size());
-        final SbuCategoryResultAdapter adapter = new SbuCategoryResultAdapter(getActivity(),
+        final SbuDailyLifeResultAdapter adapter = new SbuDailyLifeResultAdapter(getActivity(),
                 restoreList);
         Collections.sort(restoreList, new Comparator<SbuDailyLifePOI>() {
             public int compare(SbuDailyLifePOI Poi1, SbuDailyLifePOI Poi2) {

@@ -1,4 +1,4 @@
-package com.example.ruidong.sbu_application.framework.slidebutton;
+package com.example.ruidong.sbu_application.framework.common.tool.slidebutton;
 
 /**
  * Created by Ruidong on 5/27/2015.

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 
-
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,25 +20,43 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 
-public class SbuDailyLifeService implements OncampusAppService {
+public  class SbuDailyLifeService extends OncampusAppService {
 
-    public static Multimap <String,POI> dailyMap=ArrayListMultimap.create();
-    public static Multimap <String,String> dailyAliasMap=ArrayListMultimap.create();
-    public boolean dailyFlag= false;
-    public ArrayList<POI> dailyList = new ArrayList<POI>();
-    public ArrayList<String> dailyHintList = new ArrayList<String>();
+
+
+    private  Multimap <String,POI> dailyMap=ArrayListMultimap.create();
+    private  Multimap <String,String> dailyAliasMap=ArrayListMultimap.create();
+    private ArrayList<POI> dailyList = new ArrayList<POI>();
+    private ArrayList<String> dailyHintList = new ArrayList<String>();
 
     public SbuDailyLifeService (){
 
     }
 
-    public ArrayList<String> getNameList(String str){
-        Collection<String> myNameCollection = dailyAliasMap.get(str);
-        ArrayList<String> list = new ArrayList<>();
-         list.addAll(myNameCollection);
-        return  list;
+    @Override
+    public void clearMap() {
+        dailyMap.clear();
+    }
+    @Override
+    public Multimap getServiceMap(){
+        return dailyMap;
     }
 
+    public ArrayList<String> getServiceHintList(){
+        return dailyHintList;
+    }
+
+    public ArrayList getServiceList(){
+        return dailyList;
+    }
+
+
+    @Override
+    public void setMap() {
+        dailyMap.put("food",new SbuDailyLifePOI(1,"food","Salad","Wang Center","7:00 am to 10:00 pm", "631-681-8857",new LatLng(40.914833, -73.127761),"haha"));
+        dailyMap.put("food",new SbuDailyLifePOI(1,"food","Soup","Wang Center","7:00 am to 10:00 pm", "631-681-8857",new LatLng(40.912692, -73.126945),"hahaha"));
+        dailyMap.put("food", new SbuDailyLifePOI(1, "food", "noodle", "Union", "7:00 am to 10:00 pm", "631-681-8857", new LatLng(40.917168, -73.121185), "haha"));
+    }
 
     @Override
     public String firstTextInfo(POI POI_element){
@@ -67,12 +85,7 @@ public class SbuDailyLifeService implements OncampusAppService {
         return dailyMap.containsKey(str);
     }
 
-    public void setDailyMap(){
-        dailyMap.put("food",new SbuDailyLifePOI(1,"food","Salad","Wang Center","7:00 am to 10:00 pm", "631-681-8857",new LatLng(40.914833, -73.127761),"haha"));
-        dailyMap.put("food",new SbuDailyLifePOI(1,"food","Soup","Wang Center","7:00 am to 10:00 pm", "631-681-8857",new LatLng(40.912692, -73.126945),"hahaha"));
-        dailyMap.put("food",new SbuDailyLifePOI(1,"food","noodle","Union","7:00 am to 10:00 pm", "631-681-8857",new LatLng(40.917168, -73.121185),"haha"));
-    }
-
+    @Override
     public void storeData(JSONObject json) throws JSONException{
 
         POI poi = new SbuDailyLifePOI(json.getInt("POI_ID"), json.getString("POI_Category"),json.getString("POI_Name"),
@@ -84,9 +97,32 @@ public class SbuDailyLifeService implements OncampusAppService {
 
     }
 
+    @Override
+    public void obtainData(JSONArray jsonArray) {
+        for(int i=0; i<jsonArray.length(); i++){
+            JSONObject json = null;
+            try{
+                json = jsonArray.getJSONObject(i);
+                storeData(json);
+            } catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+    public ArrayList<String> getNameList(String str){
+        Collection<String> myNameCollection = dailyAliasMap.get(str);
+        ArrayList<String> list = new ArrayList<>();
+        list.addAll(myNameCollection);
+        return  list;
+    }
+
     public void storeAlias(JSONObject json) throws  JSONException{
         dailyAliasMap.put(json.getString("Aliase").toLowerCase(),json.getString("POI_Category").toLowerCase());
         dailyHintList.add(json.getString("Aliase"));
     }
+
 
 }

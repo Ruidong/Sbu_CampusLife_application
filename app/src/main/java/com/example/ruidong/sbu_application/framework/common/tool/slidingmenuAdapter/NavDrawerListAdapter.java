@@ -1,4 +1,4 @@
-package com.example.ruidong.sbu_application.framework.slidinmenu.adapter;
+package com.example.ruidong.sbu_application.framework.common.tool.slidingmenuAdapter;
 
 /**
  * Created by Ruidong on 5/27/2015.
