@@ -51,6 +51,7 @@ import android.widget.Toast;
 
 
 import com.example.ruidong.sbu_application.R;
+import com.example.ruidong.sbu_application.chatPlatform.service.ChatMainFragment;
 import com.example.ruidong.sbu_application.courseManager.service.CourseManagerPOI;
 import com.example.ruidong.sbu_application.courseManager.service.CourseScheduleFragment;
 import com.example.ruidong.sbu_application.courseManager.service.CourseSumView;
@@ -1196,6 +1197,21 @@ public class NavigationActivity extends FragmentActivity implements  ClusterMana
                 tran6.commit();
                 break;
             case 3:
+                if(MenuFragment != null){
+                    FragmentTransaction tran7 = getSupportFragmentManager().beginTransaction().remove(MenuFragment);
+                    tran7.commit();
+                }
+                if(!backButtonStack.isEmpty()){
+                    FragmentTransaction tran = getSupportFragmentManager().beginTransaction().remove(backButtonStack.peek().getFragment());
+                    tran.commit();
+                }
+                ChatMainFragment chatMainFragment = new ChatMainFragment();
+                MenuFragment = chatMainFragment;
+                FragmentTransaction chat_main_tran = getSupportFragmentManager().beginTransaction().add(R.id.CourseHistory_container,MenuFragment);
+                FragmentIdPair pair3= new FragmentIdPair(MenuFragment,R.id.CourseHistory_container,1);
+                backButtonStack.push(pair3);
+                chat_main_tran.commit();
+
                 // operation about Platform, create new Fragment about Chat Platform service
                 break;
 
